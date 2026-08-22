@@ -1,0 +1,114 @@
+.depo .wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.depo__palco {
+  position: relative;
+  width: 100%;
+  max-width: 860px;
+  outline-offset: 12px;
+}
+
+.depo__aspas {
+  color: var(--bone);
+  opacity: 0.16;
+  margin: 0 auto 1.5rem;
+}
+
+.depo__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  min-height: 340px;
+}
+
+.depo__foto {
+  width: 96px;
+  height: 96px;
+  overflow: hidden;
+  border: 1px solid var(--line-i);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.depo__fala {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3.2vw, 2.4rem);
+  line-height: 1.15;
+  text-transform: none;
+  letter-spacing: -0.005em;
+  max-width: 24ch;
+  text-wrap: balance;
+}
+
+.depo__autor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.depo__nome {
+  font-family: var(--font-label);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.depo__faixa {
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--smoke);
+  text-transform: uppercase;
+}
+
+.depo__controles {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+.depo__controles > button {
+  background: none;
+  border: 1px solid var(--line-i);
+  color: var(--bone);
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.35s var(--ease), color 0.35s var(--ease),
+    border-color 0.35s var(--ease);
+}
+.depo__controles > button:hover {
+  background: var(--bone);
+  border-color: var(--bone);
+  color: var(--ink);
+}
+
+.depo__dots {
+  display: flex;
+  gap: 0.5rem;
+}
+.depo__dots button {
+  width: 22px;
+  height: 2px;
+  border: 0;
+  padding: 0;
+  background: rgba(244, 242, 237, 0.28);
+  cursor: pointer;
+  transition: background 0.35s var(--ease);
+}
+.depo__dots button.on {
+  background: var(--bone);
+}
+
+@media (max-width: 640px) {
+  .depo__item {
+    min-height: 400px;
+  }
+}

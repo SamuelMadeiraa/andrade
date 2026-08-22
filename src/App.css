@@ -1,0 +1,12 @@
+.frame-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 150;
+  height: 12px;
+  background: var(--ink);
+}
+.frame-top .grega {
+  background: var(--ink);
+}

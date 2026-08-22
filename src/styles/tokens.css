@@ -1,0 +1,31 @@
+:root {
+  /* ---- Cor ---- */
+  --ink: #0b0b0c; /* preto tinta */
+  --bone: #f4f2ed; /* branco osso */
+  --paper: #ffffff; /* branco puro */
+  --smoke: #8a8a8c; /* cinza texto secundário */
+  --steel: #45454a; /* cinza divisórias sobre claro */
+  --line: rgba(11, 11, 12, 0.14);
+  --line-i: rgba(244, 242, 237, 0.16);
+
+  /* ---- Tipografia ---- */
+  --font-display: "Anton", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Archivo", system-ui, -apple-system, sans-serif;
+  --font-label: "Archivo", system-ui, -apple-system, sans-serif;
+
+  --t-hero: clamp(3.5rem, 12vw, 11rem);
+  --t-h1: clamp(2.5rem, 7vw, 6rem);
+  --t-h2: clamp(1.8rem, 4vw, 3rem);
+  --t-h3: clamp(1.25rem, 2vw, 1.75rem);
+  --t-body: clamp(1rem, 1.15vw, 1.125rem);
+  --t-label: 0.8rem;
+
+  /* ---- Layout ---- */
+  --maxw: 1240px;
+  --gutter: clamp(1.25rem, 5vw, 5rem);
+  --radius: 0;
+  --section-y: clamp(5rem, 12vh, 10rem);
+  --nav-h: 76px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}

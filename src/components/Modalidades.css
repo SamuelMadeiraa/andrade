@@ -1,0 +1,71 @@
+.modalidades__titulo {
+  font-size: var(--t-h1);
+  max-width: 16ch;
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+}
+
+.modalidades__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 1px;
+  background: var(--line-i);
+  border: 1px solid var(--line-i);
+}
+
+.card {
+  position: relative;
+  background: var(--ink);
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+  padding-bottom: clamp(2.75rem, 4vw, 3.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  overflow: hidden;
+  transition: background 0.4s var(--ease);
+}
+.card:hover {
+  background: #121214;
+}
+
+.card__num {
+  font-family: var(--font-label);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: var(--smoke);
+  margin-bottom: 1.5rem;
+}
+.card__nome {
+  font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+  line-height: 1;
+}
+.card__idade {
+  font-family: var(--font-label);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+.card__texto {
+  margin-top: 0.5rem;
+  color: #b9b7b2;
+  font-size: 0.96rem;
+}
+
+/* a grega só aparece no hover — desenhando da esquerda pra direita */
+.card__grega {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.65s var(--ease);
+}
+.card:hover .card__grega,
+.card:focus-within .card__grega {
+  clip-path: inset(0 0% 0 0);
+}
+.card__grega .grega {
+  background: transparent;
+}

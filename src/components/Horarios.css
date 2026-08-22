@@ -1,0 +1,93 @@
+.horarios__titulo {
+  font-size: var(--t-h1);
+  max-width: 16ch;
+  margin-bottom: clamp(2.5rem, 6vw, 3.5rem);
+}
+
+.horarios__scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line-i);
+  -webkit-overflow-scrolling: touch;
+}
+
+.grade {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  font-family: var(--font-label);
+}
+
+.grade th,
+.grade td {
+  padding: clamp(0.85rem, 1.6vw, 1.15rem) clamp(0.6rem, 1.2vw, 1rem);
+  text-align: left;
+  border-bottom: 1px solid var(--line-i);
+  border-right: 1px solid var(--line-i);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.grade th:last-child,
+.grade td:last-child {
+  border-right: 0;
+}
+.grade tbody tr:last-child th,
+.grade tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.grade thead th {
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--smoke);
+  background: rgba(244, 242, 237, 0.03);
+}
+
+.grade__hora {
+  font-family: var(--font-display);
+  font-size: 0.95rem !important;
+  letter-spacing: 0.06em !important;
+  color: var(--bone);
+  position: sticky;
+  left: 0;
+  background: var(--ink);
+  z-index: 1;
+}
+.grade thead .grade__hora {
+  background: #101012;
+}
+
+.grade td.tem {
+  font-weight: 600;
+  color: var(--bone);
+}
+.grade td.vazio {
+  color: rgba(244, 242, 237, 0.22);
+}
+.grade tbody tr:hover td.tem {
+  background: rgba(244, 242, 237, 0.06);
+}
+
+.horarios__nota {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--smoke);
+  max-width: 60ch;
+}
+.horarios__nota a {
+  color: var(--bone);
+  border-bottom: 1px solid var(--line-i);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

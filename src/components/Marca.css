@@ -1,0 +1,23 @@
+.mark {
+  position: relative;
+  overflow: hidden;
+  flex: none;
+  isolation: isolate;
+}
+.mark img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 172%;
+  max-width: none;
+  filter: grayscale(1) contrast(1.15);
+  user-select: none;
+}
+.mark--ink img {
+  filter: grayscale(1) contrast(1.15) invert(1);
+  mix-blend-mode: screen;
+}
+.mark--bone img {
+  mix-blend-mode: multiply;
+}

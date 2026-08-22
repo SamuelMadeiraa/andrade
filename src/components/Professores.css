@@ -1,0 +1,148 @@
+.professores__titulo {
+  font-size: var(--t-h1);
+  max-width: 16ch;
+  margin-bottom: 1.5rem;
+}
+.professores__lead {
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+}
+
+.professores__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+/* professor único: retrato ao lado da ficha, em vez de esticar na largura toda */
+.professores__grid--solo {
+  max-width: 920px;
+}
+.professores__grid--solo .prof {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  gap: clamp(1.75rem, 5vw, 3.5rem);
+  align-items: center;
+}
+.professores__grid--solo .prof__retrato {
+  margin-bottom: 0;
+}
+.professores__grid--solo .prof__nome {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+}
+.professores__grid--solo .faixa {
+  max-width: 260px;
+}
+
+@media (max-width: 700px) {
+  .professores__grid--solo .prof {
+    grid-template-columns: 1fr;
+  }
+  .professores__grid--solo .prof__retrato {
+    margin-bottom: 1.25rem;
+  }
+}
+
+.prof__retrato {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #e7e4dd;
+  border: 1px solid var(--line);
+  margin-bottom: 1.25rem;
+}
+.prof__retrato img {
+  transition: transform 0.8s var(--ease);
+}
+.prof:hover .prof__retrato img {
+  transform: scale(1.04);
+}
+
+.prof__vazio {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  opacity: 0.35;
+}
+.prof__vazio span {
+  font-family: var(--font-label);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.prof__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.prof__nome {
+  font-size: clamp(1.3rem, 2vw, 1.7rem);
+}
+.prof__papel {
+  font-family: var(--font-label);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+
+/* --- barra de faixa --- */
+.faixa {
+  display: block;
+  height: 12px;
+  width: 100%;
+  max-width: 210px;
+  margin: 0.6rem 0 0.35rem;
+  background: var(--bone);
+  border: 1.5px solid var(--ink);
+  position: relative;
+}
+.faixa--preta {
+  background: var(--ink);
+}
+.faixa__ponteira {
+  position: absolute;
+  right: 14%;
+  top: -1.5px;
+  bottom: -1.5px;
+  width: 42px;
+  background: var(--ink);
+  border: 1.5px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  padding-right: 4px;
+}
+.faixa--preta .faixa__ponteira {
+  background: var(--bone);
+}
+.faixa__ponteira i {
+  width: 3px;
+  height: 6px;
+  background: var(--bone);
+}
+.faixa--preta .faixa__ponteira i {
+  background: var(--ink);
+}
+
+.prof__faixa {
+  font-family: var(--font-label);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.prof__linhagem {
+  font-size: 0.85rem;
+  color: var(--steel);
+  line-height: 1.5;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--line);
+  margin-top: 0.35rem;
+}

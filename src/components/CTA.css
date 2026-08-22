@@ -1,0 +1,103 @@
+.cta__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(2.5rem, 6vw, 5rem);
+  align-items: start;
+}
+
+.cta__titulo {
+  font-size: var(--t-h1);
+  max-width: 14ch;
+  margin-bottom: 1.5rem;
+}
+.cta__lead {
+  max-width: 44ch;
+}
+
+.cta__dir {
+  border: 1px solid var(--ink);
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+  background: var(--bone);
+}
+
+.cta__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.campo > span {
+  font-family: var(--font-label);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+.campo input,
+.campo select {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  padding: 0.65rem 0;
+  font-size: 1rem;
+  transition: border-color 0.35s var(--ease);
+}
+.campo input::placeholder {
+  color: #b3b0a9;
+}
+.campo input:focus,
+.campo select:focus {
+  outline: none;
+  border-bottom-color: var(--ink);
+}
+.campo select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%),
+    linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+  background-position: calc(100% - 10px) 1.35rem, calc(100% - 5px) 1.35rem;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.cta__submit {
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+.cta__aviso {
+  font-size: 0.78rem;
+  color: var(--steel);
+  text-align: center;
+}
+
+.cta__ok {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: flex-start;
+  min-height: 300px;
+  justify-content: center;
+}
+.cta__ok h3 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  line-height: 1;
+}
+.cta__ok p {
+  color: var(--steel);
+  font-size: 0.9rem;
+}
+.cta__ok a {
+  border-bottom: 1px solid var(--ink);
+}
+
+@media (max-width: 900px) {
+  .cta__grid {
+    grid-template-columns: 1fr;
+  }
+}

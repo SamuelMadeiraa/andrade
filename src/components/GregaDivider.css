@@ -1,0 +1,16 @@
+.grega {
+  width: 100%;
+  overflow: hidden;
+  background: var(--bone);
+  line-height: 0;
+}
+.grega--dark {
+  background: var(--ink);
+}
+.grega__reveal {
+  width: 100%;
+  height: 100%;
+}
+.grega svg {
+  display: block;
+}
