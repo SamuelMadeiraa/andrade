@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import Marca from "./Marca";
-import { professores, ok } from "../data/site";
+import { useConteudo, ok, Linhas } from "../conteudo/Conteudo";
 import { fadeUp, stagger, inView } from "../motion/variants";
 import "./Professores.css";
 
@@ -20,6 +20,8 @@ function Faixa({ texto }) {
 }
 
 export default function Professores() {
+  const { professores: sec } = useConteudo();
+  const professores = sec.itens;
   return (
     <motion.section
       className="sec sec--bone professores"
@@ -31,14 +33,13 @@ export default function Professores() {
     >
       <div className="wrap">
         <motion.p className="eyebrow" variants={fadeUp}>
-          Quem conduz o treino
+          {sec.eyebrow}
         </motion.p>
         <motion.h2 className="professores__titulo" variants={fadeUp}>
-          Linhagem tem nome<br />e sobrenome.
+          <Linhas texto={sec.titulo} />
         </motion.h2>
         <motion.p className="lead professores__lead" variants={fadeUp}>
-          Jiu-Jitsu se aprende de alguém, que aprendeu de alguém. A nossa cadeia é
-          pública — confira antes de amarrar a faixa.
+          {sec.lead}
         </motion.p>
 
         <motion.ul
@@ -50,7 +51,7 @@ export default function Professores() {
           {professores.map((p, i) => (
             <motion.li key={i} className="prof" variants={fadeUp}>
               <div className="prof__retrato">
-                {p.foto ? (
+                {ok(p.foto) ? (
                   <img className="ph" src={p.foto} alt={`Retrato de ${p.nome}`} />
                 ) : (
                   <div className="prof__vazio">
@@ -63,7 +64,7 @@ export default function Professores() {
               <div className="prof__info">
                 <h3 className="prof__nome">{p.nome}</h3>
                 <span className="prof__papel">{p.papel}</span>
-                <Faixa texto={p.faixa} />
+                <Faixa texto={p.faixa || ""} />
                 <span className="prof__faixa">{p.faixa}</span>
                 {ok(p.linhagem) && (
                   <p className="prof__linhagem">{p.linhagem}</p>

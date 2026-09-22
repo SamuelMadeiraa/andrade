@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
 import Contador from "./Contador";
-import { numeros } from "../data/site";
+import { useConteudo, Linhas, aulasPorSemana } from "../conteudo/Conteudo";
 import { fadeUp, stagger, inView } from "../motion/variants";
 import "./Sobre.css";
 
 export default function Sobre() {
+  const { sobre, horarios } = useConteudo();
   return (
     <motion.section
       className="sec sec--bone sobre"
@@ -16,38 +17,29 @@ export default function Sobre() {
     >
       <div className="wrap">
         <motion.p className="eyebrow" variants={fadeUp}>
-          A filosofia
+          {sobre.eyebrow}
         </motion.p>
 
         <motion.h2 className="sobre__titulo" variants={fadeUp}>
-          Faixa não se ganha.<br />Se sobrevive a ela.
+          <Linhas texto={sobre.titulo} />
         </motion.h2>
 
         <div className="sobre__grid">
           <motion.div className="sobre__texto" variants={fadeUp}>
-            <p className="lead">
-              Aqui o tatame é honesto: ou você evolui, ou o tatame te ensina. Não
-              existe atalho, não existe graduação de cortesia e não existe aluno
-              treinando sozinho num canto da sala.
-            </p>
-            <p>
-              A Andrade BJJ funciona como uma equipe de verdade — faixa-preta corrige
-              faixa-branca, faixa-branca puxa quem chegou ontem. A hierarquia não é
-              vaidade: é o método. Cada graduação aqui vale porque foi disputada no
-              treino, não entregue no fim do ano.
-            </p>
-            <p>
-              Você vai chegar cansado, vai apanhar no começo e vai voltar no dia
-              seguinte. É assim que se constrói jogo — e é assim que a gente treina
-              desde o primeiro dia.
-            </p>
+            <p className="lead">{sobre.lead}</p>
+            {sobre.paragrafos.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
           </motion.div>
 
           <motion.ul className="sobre__numeros" variants={stagger}>
-            {numeros.map((n) => (
-              <motion.li key={n.label} variants={fadeUp}>
+            {sobre.numeros.map((n, i) => (
+              <motion.li key={i} variants={fadeUp}>
                 <span className="sobre__valor">
-                  <Contador valor={n.valor} sufixo={n.sufixo} />
+                  <Contador
+                    valor={n.valor === "auto" ? String(aulasPorSemana(horarios)) : n.valor}
+                    sufixo={n.sufixo}
+                  />
                 </span>
                 <span className="sobre__label">{n.label}</span>
               </motion.li>

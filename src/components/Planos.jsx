@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import GregaDivider from "./GregaDivider";
-import { planos, fundadora, whatsappLink, ok } from "../data/site";
+import { useConteudo, whatsappLink, ok, Linhas } from "../conteudo/Conteudo";
+import { abrirInscricao } from "../conteudo/inscricao";
 import { fadeUp, stagger, inView, EASE } from "../motion/variants";
 import "./Planos.css";
 
@@ -19,25 +20,27 @@ function Preco({ valor, gratis }) {
 }
 
 /** Faixa de escassez da inauguração — some sozinha quando as vagas acabam. */
-function Fundadora() {
-  if (!fundadora.ativa || fundadora.restantes < 1) return null;
-  const preenchidas = fundadora.total - fundadora.restantes;
-  const pct = (preenchidas / fundadora.total) * 100;
+function Fundadora({ fundadora }) {
+  const total = Number(fundadora.total) || 0;
+  const restantes = Number(fundadora.restantes) || 0;
+  if (!fundadora.ativa || restantes < 1 || total < 1) return null;
+  const preenchidas = Math.max(0, total - restantes);
+  const pct = (preenchidas / total) * 100;
 
   return (
     <motion.div className="fundadora" variants={fadeUp}>
       <div className="fundadora__txt">
-        <span className="fundadora__titulo">Turma fundadora</span>
+        <span className="fundadora__titulo">{fundadora.titulo}</span>
         <span className="fundadora__sub">
-          Os {fundadora.total} primeiros travam R$ 129,90 enquanto forem alunos.
+          {String(fundadora.texto || "").replace("{total}", total)}
           {ok(fundadora.prazo) && ` Entrada promocional até ${fundadora.prazo}.`}
         </span>
       </div>
 
       <div className="fundadora__vagas">
         <span className="fundadora__num">
-          {fundadora.restantes}
-          <span>/{fundadora.total}</span>
+          {restantes}
+          <span>/{total}</span>
         </span>
         <span className="fundadora__label">vagas restantes</span>
         <div
@@ -45,8 +48,8 @@ function Fundadora() {
           role="progressbar"
           aria-valuenow={preenchidas}
           aria-valuemin={0}
-          aria-valuemax={fundadora.total}
-          aria-label={`${preenchidas} de ${fundadora.total} vagas preenchidas`}
+          aria-valuemax={total}
+          aria-label={`${preenchidas} de ${total} vagas preenchidas`}
         >
           <motion.i
             initial={{ scaleX: 0 }}
@@ -61,6 +64,8 @@ function Fundadora() {
 }
 
 export default function Planos() {
+  const { site, planos } = useConteudo();
+
   return (
     <motion.section
       className="sec sec--bone planos"
@@ -72,18 +77,18 @@ export default function Planos() {
     >
       <div className="wrap">
         <motion.p className="eyebrow" variants={fadeUp}>
-          Planos
+          {planos.eyebrow}
         </motion.p>
         <motion.h2 className="planos__titulo" variants={fadeUp}>
-          Sem fidelidade.<br />Sem letra miúda.
+          <Linhas texto={planos.titulo} />
         </motion.h2>
 
-        <Fundadora />
+        <Fundadora fundadora={planos.fundadora} />
 
         <motion.ul className="planos__grid" variants={stagger}>
-          {planos.map((p) => (
+          {planos.itens.map((p, idx) => (
             <motion.li
-              key={p.nome}
+              key={idx}
               className={`plano ${p.destaque ? "plano--destaque" : ""}`}
               variants={fadeUp}
             >
@@ -95,42 +100,54 @@ export default function Planos() {
 
               <div className="plano__topo">
                 <h3 className="plano__nome">{p.nome}</h3>
-                {p.selo && <span className="plano__selo">{p.selo}</span>}
+                {ok(p.selo) && <span className="plano__selo">{p.selo}</span>}
               </div>
 
               <p className="plano__preco">
                 <Preco valor={p.preco} gratis={p.gratis} />
               </p>
               <span className="plano__periodo">{p.periodo}</span>
-              {p.nota && <span className="plano__nota-item">{p.nota}</span>}
+              {ok(p.nota) && <span className="plano__nota-item">{p.nota}</span>}
 
               <ul className="plano__itens">
-                {p.itens.map((i) => (
-                  <li key={i}>
+                {p.itens.map((i, k) => (
+                  <li key={k}>
                     <Check size={15} strokeWidth={2} aria-hidden="true" />
                     <span>{i}</span>
                   </li>
                 ))}
               </ul>
 
-              <a
-                className={`btn ${p.destaque ? "" : "btn--ghost"} plano__cta`}
-                href={whatsappLink(
-                  `Olá! Quero saber mais sobre o plano ${p.nome} da Andrade BJJ.`
-                )}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span>{p.cta}</span>
-              </a>
+              {p.abreInscricao ? (
+                <button
+                  type="button"
+                  className={`btn ${p.destaque ? "" : "btn--ghost"} plano__cta`}
+                  onClick={() => abrirInscricao(p.nome)}
+                >
+                  <span>{p.cta}</span>
+                </button>
+              ) : (
+                <a
+                  className={`btn ${p.destaque ? "" : "btn--ghost"} plano__cta`}
+                  href={whatsappLink(
+                    site,
+                    `Olá! Quero saber mais sobre o plano ${p.nome} da ${site.nome}.`
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span>{p.cta}</span>
+                </a>
+              )}
             </motion.li>
           ))}
         </motion.ul>
 
-        <motion.p className="planos__nota" variants={fadeUp}>
-          No plano mensal o kimono não está incluso — emprestamos até você comprar o
-          seu. No semestral, ele já vem com a matrícula.
-        </motion.p>
+        {ok(planos.nota) && (
+          <motion.p className="planos__nota" variants={fadeUp}>
+            {planos.nota}
+          </motion.p>
+        )}
       </div>
     </motion.section>
   );

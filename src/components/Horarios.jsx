@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
-import { dias, horarios, site } from "../data/site";
+import { useConteudo, Linhas } from "../conteudo/Conteudo";
 import { fadeUp, stagger, inView } from "../motion/variants";
 import "./Horarios.css";
 
 export default function Horarios() {
+  const { site, horarios: sec } = useConteudo();
+  const { dias, linhas: horarios } = sec;
   return (
     <motion.section
       className="sec sec--ink on-ink horarios"
@@ -15,10 +17,10 @@ export default function Horarios() {
     >
       <div className="wrap">
         <motion.p className="eyebrow" variants={fadeUp}>
-          Grade semanal
+          {sec.eyebrow}
         </motion.p>
         <motion.h2 className="horarios__titulo" variants={fadeUp}>
-          O tatame te espera<br />seis dias por semana.
+          <Linhas texto={sec.titulo} />
         </motion.h2>
 
         <motion.div className="horarios__scroll" variants={fadeUp}>
@@ -31,20 +33,20 @@ export default function Horarios() {
                 <th scope="col" className="grade__hora">
                   Hora
                 </th>
-                {dias.map((d) => (
-                  <th key={d} scope="col">
+                {dias.map((d, i) => (
+                  <th key={i} scope="col">
                     {d}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {horarios.map((linha) => (
-                <tr key={linha.hora}>
+              {horarios.map((linha, li) => (
+                <tr key={li}>
                   <th scope="row" className="grade__hora">
                     {linha.hora}
                   </th>
-                  {linha.aulas.map((a, i) => (
+                  {dias.map((_, i) => linha.aulas[i]).map((a, i) => (
                     <td key={i} className={a ? "tem" : "vazio"}>
                       {a || <span aria-label="sem aula">—</span>}
                     </td>
@@ -56,8 +58,7 @@ export default function Horarios() {
         </motion.div>
 
         <motion.p className="horarios__nota" variants={fadeUp}>
-          Sábado é open mat: chega quem quiser, treina quem aguentar. Feriados e
-          seletivas são avisados no {" "}
+          {sec.nota}{" "}
           <a href={site.instagram} target="_blank" rel="noreferrer">
             {site.instagramHandle}
           </a>

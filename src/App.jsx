@@ -9,11 +9,13 @@ import Depoimentos from "./components/Depoimentos";
 import CTA from "./components/CTA";
 import Footer from "./components/Footer";
 import GregaDivider from "./components/GregaDivider";
-import { depoimentosPublicaveis } from "./data/site";
+import Inscricao from "./components/Inscricao";
+import { useConteudo, publicaveis } from "./conteudo/Conteudo";
 import WhatsAppFab from "./components/WhatsAppFab";
 import "./App.css";
 
 export default function App() {
+  const { depoimentos } = useConteudo();
   return (
     <>
       <a className="skip-link" href="#sobre">
@@ -42,7 +44,7 @@ export default function App() {
         {/* sem depoimento real, a seção não entra — e a divisória
             volta a ser clara para não deixar uma faixa preta solta
             entre duas seções claras */}
-        {depoimentosPublicaveis.length > 0 ? (
+        {publicaveis(depoimentos).length > 0 ? (
           <>
             <GregaDivider />
             <Depoimentos />
@@ -56,6 +58,7 @@ export default function App() {
 
       <Footer />
       <WhatsAppFab />
+      <Inscricao />
     </>
   );
 }

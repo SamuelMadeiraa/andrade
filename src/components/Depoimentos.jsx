@@ -2,11 +2,13 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Quote } from "lucide-react";
 import Marca from "./Marca";
-import { depoimentosPublicaveis as depoimentos } from "../data/site";
+import { useConteudo, ok, publicaveis } from "../conteudo/Conteudo";
 import { fadeUp, stagger, inView, EASE } from "../motion/variants";
 import "./Depoimentos.css";
 
 export default function Depoimentos() {
+  const { depoimentos: sec } = useConteudo();
+  const depoimentos = publicaveis(sec);
   const [[i, dir], setEstado] = useState([0, 0]);
   const total = depoimentos.length;
   const atual = depoimentos[i];
@@ -24,7 +26,7 @@ export default function Depoimentos() {
     >
       <div className="wrap">
         <motion.p className="eyebrow" variants={fadeUp}>
-          Quem treina aqui
+          {sec.eyebrow}
         </motion.p>
 
         <motion.div
@@ -52,7 +54,7 @@ export default function Depoimentos() {
               transition={{ duration: 0.5, ease: EASE }}
             >
               <div className="depo__foto">
-                {atual.foto ? (
+                {ok(atual.foto) ? (
                   <img className="ph" src={atual.foto} alt={`Foto de ${atual.nome}`} />
                 ) : (
                   <Marca size={64} on="ink" />

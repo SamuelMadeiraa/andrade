@@ -1,0 +1,291 @@
+{
+  "site": {
+    "nome": "Andrade BJJ",
+    "cidade": "São José",
+    "bairro": "Sertão do Maruim",
+    "estado": "SC",
+    "endereco": "R. Maria Cristina Zimmermann, 111 — Sertão do Maruim, São José/SC",
+    "cep": "88122-110",
+    "fundadaEm": "",
+    "instagram": "https://www.instagram.com/academia_andradebjj/",
+    "instagramHandle": "@academia_andradebjj",
+    "whatsapp": "554888678250",
+    "whatsappVisivel": "+55 48 8867-8250",
+    "mensagemWhatsapp": "Olá! Vim pelo site e quero agendar minha aula experimental.",
+    "email": "academiaandradebjj@gmail.com",
+    "mapsEmbed": ""
+  },
+  "seo": {
+    "titulo": "Andrade BJJ — Academia de Jiu-Jitsu em São José/SC",
+    "descricao": "Academia de Jiu-Jitsu no Sertão do Maruim, São José/SC. Turmas kids, feminino e adulto. Primeira aula é por nossa conta."
+  },
+  "menu": {
+    "links": [
+      {
+        "href": "#sobre",
+        "label": "A Academia"
+      },
+      {
+        "href": "#modalidades",
+        "label": "Modalidades"
+      },
+      {
+        "href": "#professor",
+        "label": "Professor"
+      },
+      {
+        "href": "#horarios",
+        "label": "Horários"
+      },
+      {
+        "href": "#planos",
+        "label": "Planos"
+      }
+    ],
+    "botao": "Aula grátis",
+    "botaoMenuCelular": "Agendar aula grátis",
+    "botaoFlutuante": "Aula grátis"
+  },
+  "hero": {
+    "eyebrow": "Jiu-Jitsu · Sertão do Maruim, São José",
+    "titulo": "Na Andrade, ninguém treina sozinho.",
+    "subtitulo": "Você entra pra uma equipe: hierarquia, lealdade e evolução — faixa por faixa.",
+    "botao": "Agendar aula experimental",
+    "botaoMatricula": "Quero me matricular"
+  },
+  "sobre": {
+    "eyebrow": "A filosofia",
+    "titulo": "Faixa não se ganha.\nSe sobrevive a ela.",
+    "lead": "Aqui o tatame é honesto: ou você evolui, ou o tatame te ensina. Não existe atalho, não existe graduação de cortesia e não existe aluno treinando sozinho num canto da sala.",
+    "paragrafos": [
+      "A Andrade BJJ funciona como uma equipe de verdade — faixa-preta corrige faixa-branca, faixa-branca puxa quem chegou ontem. A hierarquia não é vaidade: é o método. Cada graduação aqui vale porque foi disputada no treino, não entregue no fim do ano.",
+      "Você vai chegar cansado, vai apanhar no começo e vai voltar no dia seguinte. É assim que se constrói jogo — e é assim que a gente treina desde o primeiro dia."
+    ],
+    "numeros": [
+      {
+        "valor": "0",
+        "sufixo": "",
+        "label": "Anos de tatame"
+      },
+      {
+        "valor": "0",
+        "sufixo": "",
+        "label": "Alunos ativos"
+      },
+      {
+        "valor": "auto",
+        "sufixo": "",
+        "label": "Aulas por semana"
+      }
+    ]
+  },
+  "modalidades": {
+    "eyebrow": "Modalidades",
+    "titulo": "Escolha por onde a jornada começa.",
+    "itens": [
+      {
+        "nome": "Kids 1",
+        "idade": "Turma das 18h",
+        "texto": "Disciplina antes de técnica. A criança aprende a cair, a levantar e a respeitar — e sai da aula cansada do jeito certo."
+      },
+      {
+        "nome": "Kids 2",
+        "idade": "Turma das 19h",
+        "texto": "Para os maiores: fundamentos mais técnicos, primeiros rolas e o respeito ao tatame que vale pra vida inteira."
+      },
+      {
+        "nome": "Feminino",
+        "idade": "Turma exclusiva · 20h",
+        "texto": "Espaço próprio, ritmo próprio. Defesa pessoal real, condicionamento e uma turma que treina junto de verdade."
+      },
+      {
+        "nome": "Jiu-Jitsu Adulto",
+        "idade": "A partir de 15 anos · 21h",
+        "texto": "A base. Guarda, passagem, finalização e o treino duro que forma o resto. Ninguém entra no fundo da piscina."
+      }
+    ]
+  },
+  "professores": {
+    "eyebrow": "Quem conduz o treino",
+    "titulo": "Linhagem tem nome\ne sobrenome.",
+    "lead": "Jiu-Jitsu se aprende de alguém, que aprendeu de alguém. A nossa cadeia é pública — confira antes de amarrar a faixa.",
+    "itens": [
+      {
+        "nome": "Wesley Andrade",
+        "faixa": "Faixa-marrom",
+        "linhagem": "",
+        "papel": "Professor responsável",
+        "foto": ""
+      }
+    ]
+  },
+  "horarios": {
+    "eyebrow": "Grade semanal",
+    "titulo": "O tatame te espera\ntrês noites por semana.",
+    "nota": "Treinos às segundas, quartas e quintas. Feriados e mudanças de horário são avisados no Instagram:",
+    "dias": [
+      "Segunda",
+      "Quarta",
+      "Quinta"
+    ],
+    "linhas": [
+      {
+        "hora": "18:00",
+        "aulas": [
+          "Kids 1",
+          "Kids 1",
+          "Kids 1"
+        ]
+      },
+      {
+        "hora": "19:00",
+        "aulas": [
+          "Kids 2",
+          "Kids 2",
+          "Kids 2"
+        ]
+      },
+      {
+        "hora": "20:00",
+        "aulas": [
+          "Feminino",
+          "Feminino",
+          "Feminino"
+        ]
+      },
+      {
+        "hora": "21:00",
+        "aulas": [
+          "Adulto",
+          "Adulto",
+          "Adulto"
+        ]
+      }
+    ]
+  },
+  "planos": {
+    "eyebrow": "Planos",
+    "titulo": "Sem fidelidade.\nSem letra miúda.",
+    "nota": "No plano mensal o kimono não está incluso — emprestamos até você comprar o seu. No semestral, ele já vem com a matrícula.",
+    "fundadora": {
+      "ativa": true,
+      "titulo": "Turma fundadora",
+      "texto": "Os {total} primeiros travam R$ 129,90 enquanto forem alunos.",
+      "total": 50,
+      "restantes": 50,
+      "prazo": ""
+    },
+    "itens": [
+      {
+        "nome": "Experimental",
+        "preco": "0",
+        "gratis": true,
+        "periodo": "aula avulsa",
+        "destaque": false,
+        "selo": "",
+        "nota": "",
+        "itens": [
+          "Uma aula completa",
+          "Kimono emprestado",
+          "Avaliação de nível",
+          "Sem compromisso"
+        ],
+        "cta": "Agendar",
+        "abreInscricao": false,
+        "valorPix": "0"
+      },
+      {
+        "nome": "Mensal",
+        "preco": "129,90",
+        "gratis": false,
+        "periodo": "por mês",
+        "destaque": true,
+        "selo": "Turma fundadora",
+        "nota": "Sem matrícula, sem taxa.",
+        "itens": [
+          "3 treinos por semana: seg, qua e qui",
+          "Acesso à turma da sua categoria",
+          "Acompanhamento de graduação",
+          "Preço travado enquanto você for aluno"
+        ],
+        "cta": "Quero entrar",
+        "abreInscricao": true,
+        "valorPix": "129,90"
+      },
+      {
+        "nome": "Semestral",
+        "preco": "699",
+        "gratis": false,
+        "periodo": "à vista · 6 meses",
+        "destaque": false,
+        "selo": "",
+        "nota": "Sai a R$ 116,50 por mês.",
+        "itens": [
+          "Tudo do plano Mensal",
+          "Kimono da casa incluso",
+          "Seis meses garantidos",
+          "Sem reajuste no período"
+        ],
+        "cta": "Garantir",
+        "abreInscricao": true,
+        "valorPix": "699"
+      }
+    ]
+  },
+  "depoimentos": {
+    "eyebrow": "Quem treina aqui",
+    "aviso": "Só aparecem no site os depoimentos marcados como publicados. Use apenas falas reais de alunos.",
+    "itens": [
+      {
+        "nome": "",
+        "faixa": "Faixa-azul · 2 anos de casa",
+        "fala": "",
+        "foto": "",
+        "publicado": false
+      }
+    ]
+  },
+  "agendamento": {
+    "eyebrow": "Primeiro treino",
+    "titulo": "Primeira aula é\npor nossa conta.",
+    "lead": "O resto depende de você. Deixa o contato que a gente encaixa você na turma certa — kimono emprestado, sem compromisso.",
+    "botao": "Agendar minha aula",
+    "aviso": "A gente responde pelo WhatsApp. Sem spam, sem lista de e-mail.",
+    "sucessoTitulo": "Recebido.\nNos vemos no tatame.",
+    "botaoMatricula": "Já quero me matricular"
+  },
+  "inscricao": {
+    "titulo": "Ficha de inscrição",
+    "texto": "Preencha seus dados, escolha o plano e pague pelo Pix. Depois é só mandar o comprovante no WhatsApp.",
+    "botao": "Continuar para o pagamento",
+    "termo": "Declaro que as informações são verdadeiras e que estou apto(a) a praticar atividade física (ou que o responsável autoriza a participação do menor).",
+    "pagamentoTitulo": "Inscrição recebida. Falta o Pix.",
+    "pagamentoTexto": "Pague pelo QR Code ou pelo Pix copia e cola. Depois envie o comprovante no WhatsApp para confirmarmos sua vaga.",
+    "botaoComprovante": "Enviar comprovante no WhatsApp"
+  },
+  "pix": {
+    "favorecido": "Wesley de Andrade",
+    "cnpj": "50.684.642/0001-25",
+    "cidade": "São José",
+    "chaveQrCode": "09ae7fa0-4671-4161-b28f-dff4523e2895",
+    "chaves": [
+      {
+        "tipo": "Chave aleatória",
+        "valor": "09ae7fa0-4671-4161-b28f-dff4523e2895"
+      },
+      {
+        "tipo": "E-mail",
+        "valor": "academiaandradebjj@gmail.com"
+      }
+    ]
+  },
+  "rodape": {
+    "frase": "Na Andrade, ninguém treina sozinho.",
+    "tituloNavegar": "Navegar",
+    "linkAgendar": "Agendar aula",
+    "linkMatricula": "Matrícula",
+    "tituloEndereco": "Onde treinamos",
+    "tituloMapa": "Mapa",
+    "textoFinal": "Andrade BJJ — São José/SC"
+  }
+}

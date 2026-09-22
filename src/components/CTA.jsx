@@ -1,27 +1,25 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { modalidades, whatsappLink } from "../data/site";
+import { useConteudo, whatsappLink, Linhas, ok } from "../conteudo/Conteudo";
+import { abrirInscricao } from "../conteudo/inscricao";
 import { fadeUp, stagger, inView, EASE } from "../motion/variants";
 import "./CTA.css";
 
 export default function CTA() {
+  const { site, modalidades, agendamento: txt } = useConteudo();
+  const turmas = modalidades.itens.map((m) => m.nome);
   const [enviado, setEnviado] = useState(false);
-  const [form, setForm] = useState({ nome: "", telefone: "", turma: "adulto" });
+  const [form, setForm] = useState({ nome: "", telefone: "", turma: "" });
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
-  /**
-   * Sem backend: o formulário monta a mensagem e abre o WhatsApp.
-   * Para plugar um serviço real (Formspree, Resend, etc.), basta trocar
-   * este handler por um fetch e manter o estado `enviado`.
-   */
+  /** Aula experimental: monta a mensagem e abre o WhatsApp. */
   const enviar = (e) => {
     e.preventDefault();
-    const turma =
-      modalidades.find((m) => m.id === form.turma)?.nome || form.turma;
+    const turma = form.turma || turmas[0] || "";
     const msg = `Olá! Sou ${form.nome} e quero agendar minha aula experimental na turma de ${turma}. Meu telefone: ${form.telefone}`;
-    window.open(whatsappLink(msg), "_blank", "noopener");
+    window.open(whatsappLink(site, msg), "_blank", "noopener");
     setEnviado(true);
   };
 
@@ -37,15 +35,22 @@ export default function CTA() {
       <div className="wrap cta__grid">
         <div className="cta__esq">
           <motion.p className="eyebrow" variants={fadeUp}>
-            Primeiro treino
+            {txt.eyebrow}
           </motion.p>
           <motion.h2 className="cta__titulo" variants={fadeUp}>
-            Primeira aula é<br />por nossa conta.
+            <Linhas texto={txt.titulo} />
           </motion.h2>
           <motion.p className="lead cta__lead" variants={fadeUp}>
-            O resto depende de você. Deixa o contato que a gente encaixa você na
-            turma certa — kimono emprestado, sem compromisso.
+            {txt.lead}
           </motion.p>
+          {ok(txt.botaoMatricula) && (
+            <motion.div variants={fadeUp} className="cta__matricula">
+              <button className="btn btn--ghost" type="button" onClick={() => abrirInscricao()}>
+                <span>{txt.botaoMatricula}</span>
+                <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
+              </button>
+            </motion.div>
+          )}
         </div>
 
         <motion.div className="cta__dir" variants={fadeUp}>
@@ -59,10 +64,12 @@ export default function CTA() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5, ease: EASE }}
               >
-                <h3>Recebido.<br />Nos vemos no tatame.</h3>
+                <h3>
+                  <Linhas texto={txt.sucessoTitulo} />
+                </h3>
                 <p>
                   Se o WhatsApp não abrir sozinho,{" "}
-                  <a href={whatsappLink()} target="_blank" rel="noreferrer">
+                  <a href={whatsappLink(site)} target="_blank" rel="noreferrer">
                     clique aqui
                   </a>
                   .
@@ -111,23 +118,21 @@ export default function CTA() {
 
                 <label className="campo">
                   <span>Turma de interesse</span>
-                  <select value={form.turma} onChange={set("turma")}>
-                    {modalidades.map((m) => (
-                      <option key={m.id} value={m.id}>
-                        {m.nome}
+                  <select value={form.turma || turmas[0] || ""} onChange={set("turma")}>
+                    {turmas.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
                       </option>
                     ))}
                   </select>
                 </label>
 
                 <button className="btn cta__submit" type="submit">
-                  <span>Agendar minha aula</span>
+                  <span>{txt.botao}</span>
                   <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
                 </button>
 
-                <p className="cta__aviso">
-                  A gente responde pelo WhatsApp. Sem spam, sem lista de e-mail.
-                </p>
+                <p className="cta__aviso">{txt.aviso}</p>
               </motion.form>
             )}
           </AnimatePresence>

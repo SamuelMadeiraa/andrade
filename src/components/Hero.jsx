@@ -1,13 +1,14 @@
 import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import Marca from "./Marca";
-import { whatsappLink, site } from "../data/site";
+import { useConteudo, whatsappLink } from "../conteudo/Conteudo";
+import { abrirInscricao } from "../conteudo/inscricao";
 import { EASE, EASE_OUT, wordReveal } from "../motion/variants";
 import "./Hero.css";
 
-const TITULO = ["Na", "Andrade,", "ninguém", "treina", "sozinho."];
-
 export default function Hero() {
+  const { site, hero } = useConteudo();
+  const TITULO = hero.titulo.split(/\s+/).filter(Boolean);
   return (
     <section className="hero sec--ink on-ink" id="hero">
       <div className="hero__inner wrap">
@@ -17,7 +18,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, duration: 0.7, ease: EASE }}
         >
-          Jiu-Jitsu · {site.bairro}, {site.cidade}
+          {hero.eyebrow}
         </motion.p>
 
         {/* ---- o lobo + o anel de grega que se desenha ---- */}
@@ -84,7 +85,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 0.8, ease: EASE }}
         >
-          Você entra pra uma equipe: hierarquia, lealdade e evolução — faixa por faixa.
+          {hero.subtitulo}
         </motion.p>
 
         <motion.div
@@ -93,9 +94,14 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.15, duration: 0.8, ease: EASE }}
         >
-          <a className="btn" href={whatsappLink()} target="_blank" rel="noreferrer">
-            <span>Agendar aula experimental</span>
+          <a className="btn" href={whatsappLink(site)} target="_blank" rel="noreferrer">
+            <span>{hero.botao}</span>
           </a>
+          {hero.botaoMatricula && (
+            <button className="btn btn--ghost" type="button" onClick={() => abrirInscricao()}>
+              <span>{hero.botaoMatricula}</span>
+            </button>
+          )}
         </motion.div>
       </div>
 

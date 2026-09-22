@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
 import GregaDivider from "./GregaDivider";
-import { modalidades } from "../data/site";
+import { useConteudo } from "../conteudo/Conteudo";
 import { fadeUp, stagger, inView } from "../motion/variants";
 import "./Modalidades.css";
 
 export default function Modalidades() {
+  const { modalidades } = useConteudo();
   return (
     <motion.section
       className="sec sec--ink on-ink modalidades"
@@ -16,16 +17,16 @@ export default function Modalidades() {
     >
       <div className="wrap">
         <motion.p className="eyebrow" variants={fadeUp}>
-          Modalidades
+          {modalidades.eyebrow}
         </motion.p>
         <motion.h2 className="modalidades__titulo" variants={fadeUp}>
-          Escolha por onde a jornada começa.
+          {modalidades.titulo}
         </motion.h2>
 
         <motion.ul className="modalidades__grid" variants={stagger}>
-          {modalidades.map((m, i) => (
+          {modalidades.itens.map((m, i) => (
             <motion.li
-              key={m.id}
+              key={i}
               className="card"
               variants={fadeUp}
               whileHover={{ y: -6 }}

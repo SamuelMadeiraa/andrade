@@ -101,3 +101,7 @@
     grid-template-columns: 1fr;
   }
 }
+
+.cta__matricula {
+  margin-top: 2rem;
+}

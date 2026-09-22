@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle } from "lucide-react";
-import { whatsappLink } from "../data/site";
+import { useConteudo, whatsappLink } from "../conteudo/Conteudo";
 import { EASE } from "../motion/variants";
 import "./WhatsAppFab.css";
 
 export default function WhatsAppFab() {
+  const { site, menu } = useConteudo();
   const [visivel, setVisivel] = useState(false);
 
   useEffect(() => {
@@ -20,7 +21,7 @@ export default function WhatsAppFab() {
       {visivel && (
         <motion.a
           className="fab"
-          href={whatsappLink()}
+          href={whatsappLink(site)}
           target="_blank"
           rel="noreferrer"
           aria-label="Falar no WhatsApp e agendar aula experimental"
@@ -30,7 +31,7 @@ export default function WhatsAppFab() {
           transition={{ duration: 0.4, ease: EASE }}
         >
           <MessageCircle size={22} strokeWidth={1.75} aria-hidden="true" />
-          <span className="fab__txt">Aula grátis</span>
+          <span className="fab__txt">{menu.botaoFlutuante}</span>
         </motion.a>
       )}
     </AnimatePresence>

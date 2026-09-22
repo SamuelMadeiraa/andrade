@@ -90,6 +90,10 @@
 
 .hero__cta {
   margin-top: 2.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
 }
 
 .hero__scroll {
