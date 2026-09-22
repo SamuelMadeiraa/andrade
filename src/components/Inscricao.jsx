@@ -18,6 +18,7 @@ const VAZIO = {
   experiencia: "Nunca treinei",
   saude: "",
   aceite: false,
+  empresa: "", // isca para robôs: fica escondido, gente de verdade não preenche
 };
 
 const EXPERIENCIAS = [
@@ -299,6 +300,15 @@ export default function Inscricao() {
                     />
                   </label>
                 </div>
+
+                <input
+                  className="insc__isca"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  value={form.empresa}
+                  onChange={set("empresa")}
+                />
 
                 <label className="insc__aceite">
                   <input type="checkbox" required checked={form.aceite} onChange={set("aceite")} />

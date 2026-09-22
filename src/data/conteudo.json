@@ -63,7 +63,7 @@
     ],
     "numeros": [
       {
-        "valor": "0",
+        "valor": "10",
         "sufixo": "",
         "label": "Anos de tatame"
       },
@@ -211,24 +211,6 @@
         "cta": "Quero entrar",
         "abreInscricao": true,
         "valorPix": "129,90"
-      },
-      {
-        "nome": "Semestral",
-        "preco": "699",
-        "gratis": false,
-        "periodo": "à vista · 6 meses",
-        "destaque": false,
-        "selo": "",
-        "nota": "Sai a R$ 116,50 por mês.",
-        "itens": [
-          "Tudo do plano Mensal",
-          "Kimono da casa incluso",
-          "Seis meses garantidos",
-          "Sem reajuste no período"
-        ],
-        "cta": "Garantir",
-        "abreInscricao": true,
-        "valorPix": "699"
       }
     ]
   },

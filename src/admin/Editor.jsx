@@ -359,6 +359,34 @@ function Lista({ chave, itens, onChange, caminho, envio }) {
   );
 }
 
+/**
+ * Foto de celular tem 5–10 MB; o servidor aceita até ~4 MB por envio.
+ * Reduz para no máximo 1600px e JPEG 85% (o site mostra tudo em P&B e
+ * pequeno, então não se perde nada visível).
+ */
+async function reduzir(arquivo, max = 1600) {
+  const url = URL.createObjectURL(arquivo);
+  try {
+    const img = await new Promise((ok, falha) => {
+      const i = new Image();
+      i.onload = () => ok(i);
+      i.onerror = () => falha(new Error("Arquivo de imagem inválido."));
+      i.src = url;
+    });
+    const escala = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement("canvas");
+    c.width = Math.round(img.naturalWidth * escala);
+    c.height = Math.round(img.naturalHeight * escala);
+    const ctx = c.getContext("2d");
+    ctx.fillStyle = "#fff"; // PNG transparente não vira fundo preto no JPEG
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL("image/jpeg", 0.85);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
 function Imagem({ rotulo, valor, onChange, envio }) {
   const input = useRef(null);
   const [status, setStatus] = useState("");
@@ -367,19 +395,18 @@ function Imagem({ rotulo, valor, onChange, envio }) {
     const arq = e.target.files?.[0];
     e.target.value = "";
     if (!arq) return;
-    if (arq.size > 8 * 1024 * 1024) return setStatus("Imagem acima de 8 MB. Reduza e tente de novo.");
-    const leitor = new FileReader();
-    leitor.onload = async () => {
-      setStatus("Enviando…");
+    if (arq.size > 25 * 1024 * 1024) return setStatus("Imagem acima de 25 MB. Use uma menor.");
+    (async () => {
+      setStatus("Preparando…");
       try {
-        const url = await envio(arq.name, leitor.result);
-        onChange(url);
+        const dataUrl = await reduzir(arq);
+        setStatus("Enviando…");
+        onChange(await envio(arq.name, dataUrl));
         setStatus("");
       } catch (err) {
-        setStatus(err.message);
+        setStatus(err.message || "Não foi possível enviar a imagem.");
       }
-    };
-    leitor.readAsDataURL(arq);
+    })();
   };
 
   return (

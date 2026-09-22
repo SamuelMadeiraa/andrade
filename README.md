@@ -29,11 +29,23 @@ A aba **Inscrições recebidas** lista quem preencheu a ficha, com status
 (aguardando Pix / pago / cancelado) e exportação em planilha CSV. As inscrições
 ficam em `data/inscricoes.json` — **fora do git**, porque têm dados pessoais.
 
-> **Limitação atual:** o servidor do painel roda só no seu computador. No site publicado
-> (Vercel) o /admin abre em modo exportação e as inscrições não ficam salvas lá — mas o
-> aluno sempre termina enviando os dados + comprovante pelo WhatsApp, então nada se perde.
-> Para editar e receber inscrições direto no site publicado é preciso um banco
-> (ex.: Vercel Blob ou Supabase): a API está toda em `server/api.js`.
+### No site no ar (Vercel)
+
+O mesmo painel funciona em **https://andrade-two.vercel.app/admin**. Lá os dados
+ficam num **Vercel Blob privado** (conteúdo, backups, inscrições e fotos), pela
+função `api/index.js`. Precisa de duas configurações no projeto da Vercel:
+
+1. **Storage → Create → Blob**, acesso **Private**, e conectar ao projeto `andrade`
+   (isso cria a variável `BLOB_READ_WRITE_TOKEN`).
+2. **Settings → Environment Variables → `ADMIN_SENHA`** com a senha do painel.
+
+Depois de qualquer mudança de variável, faça um **Redeploy**. Sem o Blob, o site
+funciona normalmente com o conteúdo do `src/data/conteudo.json`, e as inscrições
+chegam só pelo WhatsApp.
+
+> Depois que o painel do site no ar salvar pela primeira vez, **a versão do Blob passa a
+> valer** no site publicado — editar `src/data/conteudo.json` no computador não muda mais
+> o site no ar. Edite pelo /admin do site.
 
 ## Inscrição + Pix
 
