@@ -10,7 +10,15 @@
  */
 import { put, get, list, del } from "@vercel/blob";
 
-const PRIVADO = { access: "private" };
+/**
+ * Token do store. O padrão é BLOB_READ_WRITE_TOKEN, mas quem cria o store
+ * com prefixo próprio (ex.: DADOS) recebe DADOS_READ_WRITE_TOKEN.
+ */
+export const tokenBlob =
+  process.env.BLOB_READ_WRITE_TOKEN ||
+  Object.entries(process.env).find(([k, v]) => /_READ_WRITE_TOKEN$/.test(k) && v)?.[1];
+
+const PRIVADO = { access: "private", ...(tokenBlob ? { token: tokenBlob } : {}) };
 
 async function lerTexto(pathname) {
   const r = await get(pathname, { ...PRIVADO, useCache: false }).catch((e) => {
@@ -39,7 +47,7 @@ async function listarTudo(prefix) {
   const blobs = [];
   let cursor;
   do {
-    const r = await list({ prefix, cursor, limit: 1000 });
+    const r = await list({ prefix, cursor, limit: 1000, ...(tokenBlob ? { token: tokenBlob } : {}) });
     blobs.push(...r.blobs);
     cursor = r.hasMore ? r.cursor : undefined;
   } while (cursor);
@@ -82,7 +90,7 @@ export const armazemBlob = {
   async apagarInscricao(id) {
     const blobs = await listarTudo(caminhoInscricao(id));
     if (!blobs.length) return false;
-    await del(blobs.map((b) => b.url));
+    await del(blobs.map((b) => b.url), tokenBlob ? { token: tokenBlob } : undefined);
     return true;
   },
 
