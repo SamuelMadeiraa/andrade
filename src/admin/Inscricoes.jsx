@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Download, RefreshCw, Trash2, MessageCircle, ChevronDown } from "lucide-react";
 
-const ROTULO_STATUS = { pendente: "Aguardando Pix", pago: "Pago", cancelado: "Cancelado" };
+const ROTULO_STATUS = { pendente: "Aguardando pagamento", pago: "Pago", cancelado: "Cancelado" };
 
 const data = (iso) =>
   new Date(iso).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
@@ -35,6 +35,7 @@ function exportarCsv(lista) {
     ["turma", "Turma"],
     ["plano", "Plano"],
     ["valor", "Valor"],
+    ["forma", "Forma de pagamento"],
     ["responsavel", "Responsável"],
     ["experiencia", "Experiência"],
     ["saude", "Saúde/observações"],
@@ -108,7 +109,7 @@ export default function Inscricoes({ api }) {
         <div className="ad-filtros" role="tablist">
           {[
             ["todas", `Todas (${lista?.length ?? 0})`],
-            ["pendente", `Aguardando Pix (${conta("pendente")})`],
+            ["pendente", `Aguardando pagamento (${conta("pendente")})`],
             ["pago", `Pagas (${conta("pago")})`],
             ["cancelado", `Canceladas (${conta("cancelado")})`],
           ].map(([id, txt]) => (
@@ -156,6 +157,7 @@ export default function Inscricoes({ api }) {
                 <strong>{i.nome}</strong>
                 <span>
                   {i.turma} · {i.plano} {i.valor && `· ${i.valor}`}
+                  {i.forma && ` · ${i.forma}`}
                 </span>
               </button>
               <span className="ad-aluno__data">{data(i.criadaEm)}</span>
@@ -196,6 +198,8 @@ export default function Inscricoes({ api }) {
                       <dd>{i.responsavel}</dd>
                     </>
                   )}
+                  <dt>Forma de pagamento</dt>
+                  <dd>{i.forma || "—"}</dd>
                   <dt>Experiência</dt>
                   <dd>{i.experiencia || "—"}</dd>
                   <dt>Saúde / obs.</dt>

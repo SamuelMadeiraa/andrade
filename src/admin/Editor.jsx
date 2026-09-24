@@ -74,6 +74,10 @@ const ROTULOS = {
   chaveQrCode: "Chave usada no QR Code",
   chaves: "Chaves Pix exibidas",
   tipo: "Tipo",
+  formas: "Formas de pagamento",
+  rotulo: "Nome que aparece no botão",
+  ativo: "Aparece na ficha",
+  botaoAviso: "Botão quando não é Pix",
   frase: "Frase abaixo do logo",
   tituloNavegar: "Título da coluna de links",
   linkAgendar: "Link \"Agendar aula\"",
@@ -146,6 +150,7 @@ const MODELOS = {
   },
   "depoimentos.itens": { nome: "", faixa: "", fala: "", foto: "", publicado: false },
   "pix.chaves": { tipo: "", valor: "" },
+  "inscricao.formas": { id: "", rotulo: "", ativo: true, texto: "" },
 };
 
 const humaniza = (k) =>

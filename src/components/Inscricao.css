@@ -214,3 +214,50 @@
   height: 1px;
   opacity: 0;
 }
+
+/* ---------- forma de pagamento ---------- */
+.insc__formas {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.15rem;
+}
+.insc__forma {
+  flex: 1 1 6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 0.5rem;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  font-family: var(--font-label);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: border-color 0.25s var(--ease), background 0.25s var(--ease);
+}
+.insc__forma input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.insc__forma:hover {
+  border-color: var(--ink);
+}
+.insc__forma.is-on {
+  background: var(--ink);
+  color: var(--bone);
+  border-color: var(--ink);
+}
+.insc__forma:focus-within {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.insc__formaTexto {
+  display: block;
+  margin-top: 0.6rem;
+  font-size: 0.82rem;
+  color: var(--steel);
+}

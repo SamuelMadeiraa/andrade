@@ -238,12 +238,33 @@
   },
   "inscricao": {
     "titulo": "Ficha de inscrição",
-    "texto": "Preencha seus dados, escolha o plano e pague pelo Pix. Depois é só mandar o comprovante no WhatsApp.",
+    "texto": "Preencha seus dados, escolha o plano e a forma de pagamento. Leva menos de um minuto.",
     "botao": "Continuar para o pagamento",
     "termo": "Declaro que as informações são verdadeiras e que estou apto(a) a praticar atividade física (ou que o responsável autoriza a participação do menor).",
-    "pagamentoTitulo": "Inscrição recebida. Falta o Pix.",
-    "pagamentoTexto": "Pague pelo QR Code ou pelo Pix copia e cola. Depois envie o comprovante no WhatsApp para confirmarmos sua vaga.",
-    "botaoComprovante": "Enviar comprovante no WhatsApp"
+    "pagamentoTitulo": "Inscrição recebida.\nFalta o pagamento.",
+    "pagamentoTexto": "",
+    "botaoComprovante": "Enviar comprovante no WhatsApp",
+    "formas": [
+      {
+        "id": "pix",
+        "rotulo": "Pix",
+        "ativo": true,
+        "texto": "Pague pelo QR Code ou pelo copia e cola e envie o comprovante no WhatsApp para confirmarmos sua vaga."
+      },
+      {
+        "id": "cartao",
+        "rotulo": "Cartão",
+        "ativo": true,
+        "texto": "Crédito ou débito na maquininha da academia, no seu primeiro treino. Avise no WhatsApp que a gente já deixa separado."
+      },
+      {
+        "id": "dinheiro",
+        "rotulo": "Dinheiro",
+        "ativo": true,
+        "texto": "Pague em dinheiro na academia, no seu primeiro treino. Avise no WhatsApp para a gente te esperar."
+      }
+    ],
+    "botaoAviso": "Avisar no WhatsApp"
   },
   "pix": {
     "favorecido": "Wesley de Andrade",

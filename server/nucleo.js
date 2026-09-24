@@ -24,6 +24,7 @@ const CAMPOS = [
   "turma",
   "plano",
   "valor",
+  "forma",
   "responsavel",
   "experiencia",
   "saude",

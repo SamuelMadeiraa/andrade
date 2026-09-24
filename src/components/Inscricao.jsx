@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Copy, Check, ArrowUpRight } from "lucide-react";
 import QRCode from "qrcode";
-import { useConteudo, whatsappLink, turmasDaGrade, ok } from "../conteudo/Conteudo";
+import { useConteudo, whatsappLink, turmasDaGrade, ok, Linhas } from "../conteudo/Conteudo";
 import { pixCopiaECola, valorNumero, formataReais } from "../lib/pix";
 import { EASE } from "../motion/variants";
 import "./Inscricao.css";
@@ -14,6 +14,7 @@ const VAZIO = {
   email: "",
   turma: "",
   plano: "",
+  forma: "",
   responsavel: "",
   experiencia: "Nunca treinei",
   saude: "",
@@ -79,10 +80,13 @@ export default function Inscricao() {
 
   const plano = planosPagos.find((p) => p.nome === form.plano) || planosPagos[0];
   const valor = valorNumero(plano?.valorPix ?? plano?.preco);
+  const formas = (txt.formas || []).filter((f) => f.ativo);
+  const forma = formas.find((f) => f.id === form.forma) || formas[0];
+  const ehPix = forma?.id === "pix";
   const anos = idade(form.nascimento);
   const menor = (anos !== null && anos < 18) || /kids/i.test(form.turma);
   const copiaECola =
-    valor > 0 && ok(pix.chaveQrCode)
+    ehPix && valor > 0 && ok(pix.chaveQrCode)
       ? pixCopiaECola({
           chave: pix.chaveQrCode,
           nome: pix.favorecido,
@@ -131,7 +135,12 @@ export default function Inscricao() {
   const enviar = async (e) => {
     e.preventDefault();
     setEnviando(true);
-    const dados = { ...form, plano: plano?.nome || "", valor: formataReais(valor) };
+    const dados = {
+      ...form,
+      plano: plano?.nome || "",
+      valor: formataReais(valor),
+      forma: forma?.rotulo || "",
+    };
     // guarda no painel quando a API existe; se não existir, o WhatsApp leva os dados
     try {
       await fetch("/api/inscricoes", {
@@ -155,14 +164,19 @@ export default function Inscricao() {
     form.email && `E-mail: ${form.email}`,
     `Turma: ${form.turma}`,
     `Plano: ${plano?.nome || "-"} (${formataReais(valor)})`,
+    `Forma de pagamento: ${forma?.rotulo || "-"}`,
     menor && form.responsavel && `Responsável: ${form.responsavel}`,
     `Experiência: ${form.experiencia}`,
     form.saude && `Saúde/observações: ${form.saude}`,
     ``,
-    valor > 0 ? `Segue o comprovante do Pix.` : ``,
+    valor > 0 && ehPix ? `Segue o comprovante do Pix.` : ``,
+    valor > 0 && !ehPix ? `Vou pagar com ${(forma?.rotulo || "").toLowerCase()} na academia.` : ``,
   ]
     .filter((l) => l !== false && l !== undefined)
-    .join("\n");
+    .join("\n")
+    // tira as linhas em branco que sobram das partes que não se aplicam
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 
   const fechar = () => {
     setAberto(false);
@@ -269,6 +283,30 @@ export default function Inscricao() {
                     </select>
                   </label>
 
+                  {formas.length > 1 && (
+                    <div className="campo insc__full">
+                      <span>Forma de pagamento *</span>
+                      <div className="insc__formas" role="radiogroup" aria-label="Forma de pagamento">
+                        {formas.map((f) => (
+                          <label
+                            key={f.id}
+                            className={`insc__forma ${forma?.id === f.id ? "is-on" : ""}`}
+                          >
+                            <input
+                              type="radio"
+                              name="forma"
+                              value={f.id}
+                              checked={forma?.id === f.id}
+                              onChange={set("forma")}
+                            />
+                            <span>{f.rotulo}</span>
+                          </label>
+                        ))}
+                      </div>
+                      {forma?.texto && <small className="insc__formaTexto">{forma.texto}</small>}
+                    </div>
+                  )}
+
                   {menor && (
                     <label className="campo insc__full">
                       <span>Nome do responsável *</span>
@@ -324,18 +362,20 @@ export default function Inscricao() {
               <div className="insc__pagar">
                 <p className="eyebrow">Pagamento</p>
                 <h2 id="insc-titulo" className="insc__titulo">
-                  {txt.pagamentoTitulo}
+                  <Linhas texto={txt.pagamentoTitulo} />
                 </h2>
-                <p className="insc__texto">{txt.pagamentoTexto}</p>
+                {ok(txt.pagamentoTexto) && <p className="insc__texto">{txt.pagamentoTexto}</p>}
+                {forma?.texto && <p className="insc__texto">{forma.texto}</p>}
 
                 <div className="insc__resumo">
                   <span>
                     {plano?.nome} · {form.turma}
+                    {forma && ` · ${forma.rotulo}`}
                   </span>
                   <strong>{formataReais(valor)}</strong>
                 </div>
 
-                {valor > 0 && (
+                {ehPix && valor > 0 && (
                   <div className="insc__pix">
                     {qr && (
                       <img
@@ -380,7 +420,7 @@ export default function Inscricao() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <span>{txt.botaoComprovante}</span>
+                  <span>{ehPix ? txt.botaoComprovante : txt.botaoAviso || txt.botaoComprovante}</span>
                   <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
                 </a>
                 <button type="button" className="insc__voltar" onClick={() => setPasso("form")}>
