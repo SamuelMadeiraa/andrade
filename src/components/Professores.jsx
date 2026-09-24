@@ -12,7 +12,7 @@ function Faixa({ professor }) {
   const graus = Number((texto.match(/(\d+)\s*º/) || [])[1] || 0);
   return (
     <span
-      className={`faixa ${cor?.escura ? "faixa--escura" : ""} ${
+      className={`faixa ${cor?.ponteiraClara ? "faixa--ponteira-clara" : ""} ${
         cor?.id === "coral" ? "faixa--coral" : ""
       }`}
       style={cor ? { "--faixa-cor": cor.hex } : undefined}
