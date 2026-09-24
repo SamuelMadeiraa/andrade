@@ -730,3 +730,34 @@
     flex-direction: column;
   }
 }
+
+/* arrastar horários para mudar a ordem */
+.ad-grade__pega {
+  width: 34px;
+  padding-right: 0 !important;
+  color: var(--ad-suave);
+}
+.ad-grade__pega span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 32px;
+  cursor: grab;
+  border-radius: 3px;
+}
+.ad-grade__pega span:active {
+  cursor: grabbing;
+}
+.ad-grade__pega span:hover {
+  background: rgba(11, 11, 12, 0.06);
+  color: var(--ad-texto);
+}
+.ad-grade tbody tr.is-arrastando {
+  opacity: 0.45;
+}
+.ad-grade tbody tr.is-alvo-acima td {
+  box-shadow: inset 0 2px 0 var(--ink);
+}
+.ad-grade tbody tr.is-alvo-abaixo td {
+  box-shadow: inset 0 -2px 0 var(--ink);
+}

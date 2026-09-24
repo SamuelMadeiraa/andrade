@@ -1,5 +1,14 @@
 import { useRef, useState } from "react";
-import { ArrowUp, ArrowDown, Trash2, Plus, ChevronDown, Upload, X } from "lucide-react";
+import {
+  ArrowUp,
+  ArrowDown,
+  Trash2,
+  Plus,
+  ChevronDown,
+  Upload,
+  X,
+  GripVertical,
+} from "lucide-react";
 
 /* ================================================================
  *  Editor genérico: percorre o JSON do conteúdo e desenha o campo
@@ -456,6 +465,9 @@ function Imagem({ rotulo, valor, onChange, envio }) {
 export function GradeHorarios({ valor, onChange }) {
   const { dias, linhas } = valor;
   const turmas = [...new Set(linhas.flatMap((l) => l.aulas).filter(Boolean))];
+  // arrastar um horário para cima/baixo; as setas continuam para o celular
+  const [arrastando, setArrastando] = useState(null);
+  const [alvo, setAlvo] = useState(null);
 
   const setDias = (d) => onChange({ ...valor, dias: d });
   const setLinhas = (l) => onChange({ ...valor, linhas: l });
@@ -488,17 +500,34 @@ export function GradeHorarios({ valor, onChange }) {
     setLinhas(n);
   };
 
+  /** Tira o horário da posição `de` e encaixa em `para`. */
+  const reordenar = (de, para) => {
+    if (de === null || para === null || de === para) return;
+    const n = [...linhas];
+    const [movido] = n.splice(de, 1);
+    n.splice(para, 0, movido);
+    setLinhas(n);
+  };
+
+  const soltar = () => {
+    reordenar(arrastando, alvo);
+    setArrastando(null);
+    setAlvo(null);
+  };
+
   return (
     <div className="ad-grade">
       <span className="ad-rotulo">Grade de horários</span>
       <small className="ad-dica">
         Escreva o nome da turma na célula. Célula vazia = sem aula. As turmas daqui aparecem na
-        ficha de inscrição.
+        ficha de inscrição. Para mudar a ordem, arraste o horário pelo ícone ⠿ — no celular, use as
+        setas.
       </small>
       <div className="ad-grade__scroll">
         <table>
           <thead>
             <tr>
+              <th aria-label="Ordem" />
               <th>Hora</th>
               {dias.map((d, i) => (
                 <th key={i}>
@@ -528,7 +557,47 @@ export function GradeHorarios({ valor, onChange }) {
           </thead>
           <tbody>
             {linhas.map((l, li) => (
-              <tr key={li}>
+              <tr
+                key={li}
+                className={`${arrastando === li ? "is-arrastando" : ""} ${
+                  alvo === li && arrastando !== null && arrastando !== li
+                    ? arrastando < li
+                      ? "is-alvo-abaixo"
+                      : "is-alvo-acima"
+                    : ""
+                }`}
+                onDragOver={(e) => {
+                  if (arrastando === null) return;
+                  e.preventDefault();
+                  setAlvo(li);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  soltar();
+                }}
+              >
+                <td className="ad-grade__pega">
+                  <span
+                    draggable
+                    role="button"
+                    tabIndex={-1}
+                    aria-label={`Arrastar o horário ${l.hora}`}
+                    title="Arraste para mudar a ordem"
+                    onDragStart={(e) => {
+                      setArrastando(li);
+                      setAlvo(li);
+                      e.dataTransfer.effectAllowed = "move";
+                      // o Firefox só inicia o arrasto se algo for escrito aqui
+                      e.dataTransfer.setData("text/plain", String(li));
+                    }}
+                    onDragEnd={() => {
+                      setArrastando(null);
+                      setAlvo(null);
+                    }}
+                  >
+                    <GripVertical size={16} />
+                  </span>
+                </td>
                 <td>
                   <input
                     className="ad-grade__hora"
