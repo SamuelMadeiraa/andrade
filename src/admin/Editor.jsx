@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { CORES_FAIXA } from "../lib/faixas";
 import {
   ArrowUp,
   ArrowDown,
@@ -50,7 +51,8 @@ const ROTULOS = {
   itens: "Itens",
   idade: "Público / horário",
   texto: "Texto",
-  faixa: "Faixa",
+  faixa: "Faixa (texto)",
+  cor: "Cor da faixa",
   linhagem: "Linhagem",
   papel: "Função",
   foto: "Foto",
@@ -109,6 +111,8 @@ const DICAS = {
   fundadaEm: "Deixe vazio para não mostrar.",
   linhagem: "Ex.: Mitsuyo Maeda › Carlos Gracie › … › Wesley Andrade. Vazio = não aparece.",
   publicado: "Só marque com depoimento real, com nome do aluno.",
+  cor: "Cor da barrinha no card. Em \"Automática\", a cor sai do texto da faixa.",
+  faixa: 'Ex.: "Faixa-marrom" ou "Faixa-preta 2º grau" (os graus viram risquinhos na ponteira).',
   href: "Ex.: #horarios",
 };
 
@@ -143,7 +147,7 @@ const MODELOS = {
   "sobre.paragrafos": "",
   "sobre.numeros": { valor: "0", sufixo: "", label: "" },
   "modalidades.itens": { nome: "", idade: "", texto: "" },
-  "professores.itens": { nome: "", faixa: "", linhagem: "", papel: "", foto: "" },
+  "professores.itens": { nome: "", faixa: "", cor: "", linhagem: "", papel: "", foto: "" },
   "planos.itens": {
     nome: "",
     preco: "0",
@@ -230,6 +234,31 @@ export function Campo({ chave, valor, onChange, caminho, envio }) {
         <legend>{rotulo}</legend>
         <Objeto obj={valor} onChange={onChange} caminho={caminho} envio={envio} />
       </fieldset>
+    );
+  }
+
+  if (chave === "cor") {
+    const atual = CORES_FAIXA.find((c) => c.id === valor);
+    return (
+      <label className="ad-campo">
+        <span className="ad-rotulo">{rotulo}</span>
+        <div className="ad-cor">
+          <span
+            className="ad-cor__amostra"
+            style={{ background: atual ? atual.hex : "transparent" }}
+            aria-hidden="true"
+          />
+          <select value={valor || ""} onChange={(e) => onChange(e.target.value)}>
+            <option value="">Automática (pelo texto da faixa)</option>
+            {CORES_FAIXA.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.rotulo}
+              </option>
+            ))}
+          </select>
+        </div>
+        {dica && <small className="ad-dica">{dica}</small>}
+      </label>
     );
   }
 

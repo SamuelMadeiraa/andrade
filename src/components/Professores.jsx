@@ -1,15 +1,23 @@
 import { motion } from "framer-motion";
 import Marca from "./Marca";
 import { useConteudo, ok, Linhas } from "../conteudo/Conteudo";
+import { corDaFaixa } from "../lib/faixas";
 import { fadeUp, stagger, inView } from "../motion/variants";
 import "./Professores.css";
 
-/** Barra de faixa em P&B: preta = sólida, demais = contorno. Ponteira + graus. */
-function Faixa({ texto }) {
-  const preta = /preta/i.test(texto);
+/** Barra de faixa na cor escolhida no painel (ou deduzida do texto). Ponteira + graus. */
+function Faixa({ professor }) {
+  const texto = professor.faixa || "";
+  const cor = corDaFaixa(professor);
   const graus = Number((texto.match(/(\d+)\s*º/) || [])[1] || 0);
   return (
-    <span className={`faixa ${preta ? "faixa--preta" : ""}`} aria-hidden="true">
+    <span
+      className={`faixa ${cor?.escura ? "faixa--escura" : ""} ${
+        cor?.id === "coral" ? "faixa--coral" : ""
+      }`}
+      style={cor ? { "--faixa-cor": cor.hex } : undefined}
+      aria-hidden="true"
+    >
       <span className="faixa__ponteira">
         {Array.from({ length: Math.min(graus, 6) }).map((_, i) => (
           <i key={i} />
@@ -64,7 +72,7 @@ export default function Professores() {
               <div className="prof__info">
                 <h3 className="prof__nome">{p.nome}</h3>
                 <span className="prof__papel">{p.papel}</span>
-                <Faixa texto={p.faixa || ""} />
+                <Faixa professor={p} />
                 <span className="prof__faixa">{p.faixa}</span>
                 {ok(p.linhagem) && (
                   <p className="prof__linhagem">{p.linhagem}</p>
