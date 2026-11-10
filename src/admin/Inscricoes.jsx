@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Download, RefreshCw, Trash2, MessageCircle, ChevronDown } from "lucide-react";
+import { Download, RefreshCw, Trash2, MessageCircle, ChevronDown, UserPlus } from "lucide-react";
+import { AcessoCriado, comFamilia } from "./Alunos";
 
 const ROTULO_STATUS = { pendente: "Aguardando pagamento", pago: "Pago", cancelado: "Cancelado" };
 
@@ -65,6 +66,7 @@ export default function Inscricoes({ api }) {
   const [erro, setErro] = useState("");
   const [filtro, setFiltro] = useState("todas");
   const [aberta, setAberta] = useState(null);
+  const [acesso, setAcesso] = useState(null);
 
   const carregar = async () => {
     setErro("");
@@ -95,6 +97,32 @@ export default function Inscricoes({ api }) {
     try {
       await api("DELETE", `/api/inscricoes/${i.id}`);
       setLista((l) => l.filter((x) => x.id !== i.id));
+    } catch (e) {
+      setErro(e.message);
+    }
+  };
+
+  // a inscrição vira cadastro de aluno, já com login e senha temporária
+  const tornarAluno = async (i) => {
+    setErro("");
+    try {
+      const r = await comFamilia((c) => api("POST", "/api/alunos", c), {
+        nome: i.nome,
+        whatsapp: i.whatsapp,
+        email: i.email,
+        nascimento: i.nascimento,
+        turma: i.turma,
+        plano: i.plano,
+        valor: String(i.valor || "").replace(/[^\d,.]/g, ""),
+        entrouEm: String(i.criadaEm).slice(0, 10),
+        obs: [i.responsavel && `Responsável: ${i.responsavel}`, i.saude && `Saúde: ${i.saude}`]
+          .filter(Boolean)
+          .join("\n"),
+        primeiroMesPago: i.status === "pago",
+      });
+      if (!r) return;
+      setAcesso(r);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e) {
       setErro(e.message);
     }
@@ -139,6 +167,7 @@ export default function Inscricoes({ api }) {
       </div>
 
       {erro && <p className="ad-erro">{erro}</p>}
+      {acesso && <AcessoCriado acesso={acesso} onFechar={() => setAcesso(null)} />}
       {lista === null && <p className="ad-vazio">Carregando…</p>}
       {lista && !visiveis.length && !erro && (
         <p className="ad-vazio">Nenhuma inscrição {filtro === "todas" ? "ainda" : "aqui"}.</p>
@@ -209,6 +238,9 @@ export default function Inscricoes({ api }) {
                   <a className="ad-btn" href={linkWhats(i.whatsapp)} target="_blank" rel="noreferrer">
                     <MessageCircle size={15} /> Chamar no WhatsApp
                   </a>
+                  <button className="ad-btn ad-btn--ghost" onClick={() => tornarAluno(i)}>
+                    <UserPlus size={15} /> Tornar aluno
+                  </button>
                   <button className="ad-btn ad-btn--ghost ad-perigo" onClick={() => apagar(i)}>
                     <Trash2 size={15} /> Apagar
                   </button>

@@ -7,6 +7,7 @@ import {
   Eye,
   EyeOff,
   Users,
+  Wallet,
   Menu as MenuIcon,
   RotateCcw,
 } from "lucide-react";
@@ -14,9 +15,12 @@ import padrao from "../data/conteudo.json";
 import { mesclar } from "../conteudo/Conteudo";
 import { Objeto, GradeHorarios } from "./Editor";
 import Inscricoes from "./Inscricoes";
+import Alunos from "./Alunos";
+import "../styles/entrar.css";
 import "./admin.css";
 
 const SECOES = [
+  { id: "alunos", titulo: "Alunos e mensalidades", icone: Wallet },
   { id: "inscricoes", titulo: "Inscrições recebidas", icone: Users },
   { id: "hero", titulo: "Abertura" },
   { id: "sobre", titulo: "A filosofia", ancora: "sobre" },
@@ -34,7 +38,6 @@ const SECOES = [
   { id: "seo", titulo: "Google (título e descrição)" },
 ];
 
-const CHAVE_SENHA = "andrade-admin-senha";
 const CHAVE_ABA = "andrade-admin-aba";
 
 const guarda = {
@@ -83,13 +86,17 @@ function Login({ onEntrar }) {
     setCarregando(true);
     setErro("");
     try {
-      const r = await fetch("/api/login", { method: "POST", headers: { "x-admin-senha": senha } });
+      // a senha vai uma vez; a sessão volta num cookie que o JavaScript da página não lê
+      const r = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ senha }),
+      });
       const tipo = r.headers.get("content-type") || "";
       if (!tipo.includes("json")) throw new Error("sem-api");
       const d = await r.json();
       if (!r.ok) throw new Error(d.erro || "Não foi possível entrar.");
-      guarda.gravar("sessionStorage", CHAVE_SENHA, senha);
-      onEntrar(senha, false);
+      onEntrar({ logado: true, senhaFraca: Boolean(d.senhaFraca) });
     } catch (err) {
       if (err.message === "sem-api" || err.name === "TypeError") setSemApi(true);
       else setErro(err.message);
@@ -99,39 +106,46 @@ function Login({ onEntrar }) {
   };
 
   return (
-    <div className="ad-login">
-      <form className="ad-login__caixa" onSubmit={entrar}>
-        <p className="ad-login__marca">Andrade BJJ</p>
-        <h1>Painel do site</h1>
-        <label className="ad-campo">
-          <span className="ad-rotulo">Senha</span>
-          <input
-            type="password"
-            autoFocus
-            autoComplete="current-password"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-          />
-        </label>
-        {erro && <p className="ad-erro">{erro}</p>}
-        {semApi && (
-          <div className="ad-aviso">
-            <p>
-              Este endereço não tem o servidor do painel. Para salvar alterações, rode o site no
-              computador com <code>npm run dev</code> e abra <code>localhost:5173/admin</code>.
-            </p>
-            <button type="button" className="ad-btn ad-btn--ghost" onClick={() => onEntrar("", true)}>
-              Abrir assim mesmo (só exporta o arquivo)
-            </button>
-          </div>
-        )}
-        <button className="ad-btn ad-btn--grande" disabled={carregando || !senha}>
-          {carregando ? "Entrando…" : "Entrar"}
-        </button>
-        <a className="ad-login__voltar" href="/">
-          ← Voltar para o site
-        </a>
-      </form>
+    <div className="entrar">
+      <div className="entrar__tela">
+        <form className="entrar__form" onSubmit={entrar}>
+          <p className="entrar__papel">Área do professor</p>
+          <h1>Painel da academia</h1>
+          <label className="entrar__campo">
+            <span>Senha</span>
+            <input
+              type="password"
+              autoFocus
+              autoComplete="current-password"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+            />
+          </label>
+          {erro && <p className="entrar__erro">{erro}</p>}
+          {semApi && (
+            <div className="entrar__aviso">
+              <p>
+                Este endereço não tem o servidor do painel. Para salvar alterações, rode o site no
+                computador com <code>npm run dev</code> e abra <code>localhost:5173/admin</code>.
+              </p>
+              <button
+                type="button"
+                className="entrar__btn entrar__btn--ghost"
+                onClick={() => onEntrar({ offline: true })}
+              >
+                Abrir assim mesmo
+              </button>
+            </div>
+          )}
+          <button className="entrar__btn" disabled={carregando || !senha}>
+            {carregando ? "Entrando…" : "Entrar"}
+          </button>
+        </form>
+        <p className="entrar__rodape">
+          <a href="/">← Voltar para o site</a>
+          <a href="/aluno">Sou aluno →</a>
+        </p>
+      </div>
     </div>
   );
 }
@@ -139,11 +153,13 @@ function Login({ onEntrar }) {
 /* ---------------------------------------------------------------- */
 
 export default function Admin() {
-  const [senha, setSenha] = useState(() => guarda.ler("sessionStorage", CHAVE_SENHA));
+  // null = conferindo se a sessão (cookie) ainda vale
+  const [logado, setLogado] = useState(null);
+  const [senhaFraca, setSenhaFraca] = useState(false);
   const [offline, setOffline] = useState(false);
   const [conteudo, setConteudo] = useState(null);
   const [salvo, setSalvo] = useState("");
-  const [aba, setAba] = useState(() => guarda.ler("sessionStorage", CHAVE_ABA) || "inscricoes");
+  const [aba, setAba] = useState(() => guarda.ler("sessionStorage", CHAVE_ABA) || "alunos");
   const [status, setStatus] = useState({ tipo: "", msg: "" });
   const [previa, setPrevia] = useState(() => window.innerWidth > 1100);
   const [menuAberto, setMenuAberto] = useState(false);
@@ -158,28 +174,42 @@ export default function Admin() {
     return () => robots.remove();
   }, []);
 
-  const api = useCallback(
-    async (metodo, url, corpo) => {
-      const r = await fetch(url, {
-        method: metodo,
-        headers: { "Content-Type": "application/json", "x-admin-senha": senha || "" },
-        body: corpo ? JSON.stringify(corpo) : undefined,
-      });
-      const d = await r.json().catch(() => ({}));
-      if (r.status === 401) {
-        guarda.gravar("sessionStorage", CHAVE_SENHA, null);
-        setSenha(null);
-        throw new Error("Sessão expirada. Entre de novo.");
-      }
-      if (!r.ok) throw new Error(d.erro || `Erro ${r.status}`);
-      return d;
-    },
-    [senha]
-  );
+  // voltou ao painel: a sessão do cookie ainda vale?
+  useEffect(() => {
+    // versões antigas guardavam a senha no navegador: apaga
+    guarda.gravar("sessionStorage", "andrade-admin-senha", null);
+    let vivo = true;
+    fetch("/api/sessao", { cache: "no-store" })
+      .then(async (r) => {
+        const d = r.ok ? await r.json() : null;
+        if (!vivo) return;
+        setLogado(Boolean(d?.ok));
+        setSenhaFraca(Boolean(d?.senhaFraca));
+      })
+      .catch(() => vivo && setLogado(false));
+    return () => {
+      vivo = false;
+    };
+  }, []);
+
+  const api = useCallback(async (metodo, url, corpo) => {
+    const r = await fetch(url, {
+      method: metodo,
+      headers: { "Content-Type": "application/json" },
+      body: corpo ? JSON.stringify(corpo) : undefined,
+    });
+    const d = await r.json().catch(() => ({}));
+    if (r.status === 401) {
+      setLogado(false);
+      throw new Error("Sessão expirada. Entre de novo.");
+    }
+    if (!r.ok) throw Object.assign(new Error(d.erro || `Erro ${r.status}`), { status: r.status, dados: d });
+    return d;
+  }, []);
 
   // carrega o conteúdo atual
   useEffect(() => {
-    if (!senha && !offline) return;
+    if (!logado && !offline) return;
     let vivo = true;
     fetch("/api/conteudo", { cache: "no-store" })
       .then((r) => ((r.headers.get("content-type") || "").includes("json") ? r.json() : null))
@@ -193,7 +223,7 @@ export default function Admin() {
     return () => {
       vivo = false;
     };
-  }, [senha, offline]);
+  }, [logado, offline]);
 
   const sujo = conteudo && JSON.stringify(conteudo) !== salvo;
 
@@ -288,17 +318,26 @@ export default function Admin() {
 
   const sair = () => {
     if (sujo && !window.confirm("Sair sem salvar as alterações?")) return;
-    guarda.gravar("sessionStorage", CHAVE_SENHA, null);
-    setSenha(null);
+    fetch("/api/sair", { method: "POST" }).catch(() => {});
+    setLogado(false);
     setOffline(false);
     setConteudo(null);
   };
 
   const secao = SECOES.find((s) => s.id === aba) || SECOES[0];
+  // alunos e inscrições não mexem no site: sem prévia ao lado
+  const semSite = secao.id === "alunos" || secao.id === "inscricoes";
   const atualiza = (id) => (novo) => setConteudo((c) => ({ ...c, [id]: novo }));
 
   const editor = useMemo(() => {
     if (!conteudo) return null;
+    if (aba === "alunos") {
+      return offline ? (
+        <p className="ad-aviso">Os alunos só aparecem com o servidor local rodando.</p>
+      ) : (
+        <Alunos api={api} conteudo={conteudo} />
+      );
+    }
     if (aba === "inscricoes") {
       return offline ? (
         <p className="ad-aviso">As inscrições só aparecem com o servidor local rodando.</p>
@@ -340,12 +379,15 @@ export default function Admin() {
     );
   }, [conteudo, aba, api, envio, offline]);
 
-  if (!senha && !offline) {
+  if (logado === null && !offline) return <div className="ad-carregando">Carregando…</div>;
+
+  if (!logado && !offline) {
     return (
       <Login
-        onEntrar={(s, off) => {
-          setSenha(s || null);
-          setOffline(off);
+        onEntrar={(r) => {
+          setLogado(Boolean(r.logado));
+          setSenhaFraca(Boolean(r.senhaFraca));
+          setOffline(Boolean(r.offline));
         }}
       />
     );
@@ -354,17 +396,17 @@ export default function Admin() {
   if (!conteudo) return <div className="ad-carregando">Carregando…</div>;
 
   return (
-    <div className={`ad ${previa ? "ad--previa" : ""}`}>
+    <div className={`ad ${previa && !semSite ? "ad--previa" : ""}`}>
       <aside className={`ad-lateral ${menuAberto ? "is-aberto" : ""}`}>
         <div className="ad-lateral__marca">
           <strong>Andrade BJJ</strong>
           <span>Painel do site</span>
         </div>
         <nav>
-          {SECOES.map((s, i) => (
+          {SECOES.map((s) => (
             <button
               key={s.id}
-              className={`${aba === s.id ? "is-on" : ""} ${i === 0 ? "ad-lateral__destaque" : ""}`}
+              className={`${aba === s.id ? "is-on" : ""} ${s.icone ? "ad-lateral__destaque" : ""}`}
               onClick={() => irPara(s.id)}
             >
               {s.icone && <s.icone size={15} />}
@@ -407,6 +449,13 @@ export default function Admin() {
           </div>
         </header>
 
+        {senhaFraca && !offline && (
+          <p className="ad-aviso ad-aviso--faixa" role="status">
+            A senha do painel é curta. Troque por uma com pelo menos 12 caracteres em{" "}
+            <strong>Vercel → Settings → Environment Variables → ADMIN_SENHA</strong> e faça um Redeploy.
+          </p>
+        )}
+
         {offline && (
           <p className="ad-aviso ad-aviso--faixa">
             Modo exportação: as alterações não são gravadas no site. Use “Baixar arquivo” e
@@ -415,9 +464,9 @@ export default function Admin() {
         )}
 
         <div className="ad-corpo">
-          <section className="ad-editor">{editor}</section>
+          <section className={`ad-editor ${semSite ? "ad-editor--largo" : ""}`}>{editor}</section>
 
-          {previa && (
+          {previa && !semSite && (
             <div className="ad-previa">
               <iframe ref={iframe} src="/?previa" title="Prévia do site" onLoad={enviarPrevia} />
             </div>

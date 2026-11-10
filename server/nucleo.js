@@ -5,15 +5,37 @@
  *
  *   GET    /api/conteudo           público   conteúdo atual do site
  *   PUT    /api/conteudo           admin     salva o conteúdo (+ backup)
- *   POST   /api/login              admin     confere a senha
+ *   POST   /api/login              público   confere a senha e abre a sessão (cookie, 8 h)
+ *   GET    /api/sessao             admin     a sessão do professor ainda vale?
+ *   POST   /api/sair               público   fecha a sessão do professor
  *   POST   /api/inscricoes         público   nova inscrição de aluno
  *   GET    /api/inscricoes         admin     lista as inscrições
  *   PATCH  /api/inscricoes/:id     admin     muda status (pendente/pago/cancelado)
  *   DELETE /api/inscricoes/:id     admin     apaga uma inscrição
  *   POST   /api/upload             admin     envia imagem
  *   GET    /api/arquivo/:nome      público   serve imagem enviada (só no Blob)
+ *
+ * Alunos, mensalidades e comprovantes (/api/aluno… e /api/alunos…) ficam em
+ * server/alunos.js.
  */
 import crypto from "node:crypto";
+import { criarRotasAlunos } from "./alunos.js";
+import { criarLimite, origemDe } from "./limite.js";
+import {
+  COOKIE_ADMIN,
+  SESSAO_ADMIN_HORAS,
+  criarAssinador,
+  deOutroSite,
+  digitalDaSenha,
+  gravarCookie,
+  lerCookie,
+} from "./sessao.js";
+
+// senha do painel: 5 erros por endereço fecham a porta por 15 minutos (até para a senha certa)
+const PAINEL_ERROS = 5;
+const PAINEL_BLOQUEIO_MIN = 15;
+// abaixo disso, o painel avisa que a senha é fraca
+const PAINEL_SENHA_MIN = 12;
 
 const STATUS = ["pendente", "pago", "cancelado"];
 const CAMPOS = [
@@ -93,10 +115,52 @@ export const nomeDeArquivo = (nome, ext) => {
  * @param {{ senha?: string, armazem: object }} opcoes
  * @returns {(req, res, rota: string) => Promise<void>}
  */
-export function criarRotas({ senha, armazem }) {
-  const autorizado = (req) =>
-    Boolean(senha) &&
-    crypto.timingSafeEqual(hash(req.headers["x-admin-senha"] || ""), hash(senha));
+export function criarRotas({ senha, armazem, diagnostico }) {
+  const assinador = criarAssinador(senha);
+  const errosPainel = criarLimite({ max: PAINEL_ERROS, janelaMs: PAINEL_BLOQUEIO_MIN * 60_000 });
+  const senhaConfere = (digitada) => crypto.timingSafeEqual(hash(digitada), hash(senha));
+
+  /** Sessão do professor no cookie: assinada, dentro das 8 h e feita com a senha atual. */
+  const sessaoAdmin = (req) => {
+    const d = assinador.ler(lerCookie(req, COOKIE_ADMIN));
+    return Boolean(d && d.papel === "admin" && d.sv === digitalDaSenha(senha));
+  };
+
+  /**
+   * Confere a senha digitada contando os erros por endereço. Durante o bloqueio
+   * nem a senha certa entra. Devolve "ok" | "errada" | "bloqueado".
+   */
+  const tentarSenha = (req, digitada) => {
+    const origem = origemDe(req);
+    if (errosPainel.espera(origem)) return "bloqueado";
+    if (senhaConfere(digitada)) {
+      errosPainel.zerar(origem);
+      return "ok";
+    }
+    errosPainel.registrar(origem);
+    return errosPainel.espera(origem) ? "bloqueado" : "errada";
+  };
+
+  /**
+   * O navegador usa o cookie da sessão. Scripts (importador, teste de fumaça)
+   * mandam a senha no cabeçalho x-admin-senha — com a mesma trava de erros.
+   */
+  const autorizado = (req) => {
+    if (!senha) return false;
+    if (sessaoAdmin(req)) return true;
+    const cab = req.headers["x-admin-senha"];
+    return Boolean(cab) && tentarSenha(req, String(cab)) === "ok";
+  };
+
+  const bloqueado = (res) =>
+    json(res, 429, {
+      erro: `Muitas tentativas com a senha errada. Espere ${PAINEL_BLOQUEIO_MIN} minutos e tente de novo.`,
+    });
+
+  const tratarAlunos = criarRotasAlunos({ senha, armazem, json, lerCorpo });
+
+  // ficha de inscrição: 5 por origem a cada 10 minutos (robô não enche o painel)
+  const limiteInscricao = criarLimite({ max: 5, janelaMs: 10 * 60_000 });
 
   return async function tratar(req, res, rotaBruta) {
     const rota = "/" + String(rotaBruta).replace(/^\/+|\/+$/g, "");
@@ -108,11 +172,17 @@ export function criarRotas({ senha, armazem }) {
         return false;
       }
       if (!autorizado(req)) {
-        json(res, 401, { erro: "Senha incorreta." });
+        if (errosPainel.espera(origemDe(req))) bloqueado(res);
+        else json(res, 401, { erro: "Senha incorreta." });
         return false;
       }
       return true;
     };
+
+    // pedido que muda dados vindo de outro site: recusado antes de tudo
+    if (rota.startsWith("/api/") && deOutroSite(req)) {
+      return json(res, 403, { erro: "Pedido de outro site recusado." });
+    }
 
     try {
       // ---------- conteúdo ----------
@@ -132,12 +202,42 @@ export function criarRotas({ senha, armazem }) {
       }
 
       if (rota === "/api/login" && m === "POST") {
+        if (!senha) return json(res, 503, { erro: "Senha do painel não configurada (ADMIN_SENHA)." });
+        const corpo = await lerCorpo(req, 2_000);
+        const digitada = String(corpo.senha ?? req.headers["x-admin-senha"] ?? "");
+        const r = tentarSenha(req, digitada);
+        if (r === "bloqueado") return bloqueado(res);
+        if (r === "errada") return json(res, 401, { erro: "Senha incorreta." });
+        const token = assinador.criar({
+          papel: "admin",
+          sv: digitalDaSenha(senha),
+          exp: Date.now() + SESSAO_ADMIN_HORAS * 3600_000,
+        });
+        gravarCookie(req, res, COOKIE_ADMIN, token, SESSAO_ADMIN_HORAS * 3600);
+        return json(res, 200, { ok: true, senhaFraca: senha.length < PAINEL_SENHA_MIN });
+      }
+      // configuração do servidor: sem senha configurada, diz só isso (é o que uma instalação nova precisa saber)
+      if (rota === "/api/diagnostico" && m === "GET") {
+        if (!senha) return json(res, 200, { senhaConfigurada: false });
         if (!exigeAdmin()) return;
+        return json(res, 200, { senhaConfigurada: true, ...(diagnostico ? diagnostico() : {}) });
+      }
+      if (rota === "/api/sessao" && m === "GET") {
+        if (!exigeAdmin()) return;
+        return json(res, 200, { ok: true, senhaFraca: senha.length < PAINEL_SENHA_MIN });
+      }
+      if (rota === "/api/sair" && m === "POST") {
+        gravarCookie(req, res, COOKIE_ADMIN, "", 0);
         return json(res, 200, { ok: true });
       }
 
       // ---------- inscrições ----------
       if (rota === "/api/inscricoes" && m === "POST") {
+        const origem = origemDe(req);
+        if (limiteInscricao.espera(origem)) {
+          return json(res, 429, { erro: "Muitas inscrições em pouco tempo. Tente de novo em alguns minutos." });
+        }
+        limiteInscricao.registrar(origem);
         const corpo = await lerCorpo(req, 20_000);
         // campo escondido no formulário: só robô preenche
         if (corpo.empresa) return json(res, 201, { ok: true });
@@ -198,10 +298,13 @@ export function criarRotas({ senha, armazem }) {
         return res.end(img.dados);
       }
 
+      // ---------- alunos e mensalidades ----------
+      if (await tratarAlunos(req, res, rota, exigeAdmin)) return;
+
       return json(res, 404, { erro: "Rota não encontrada." });
     } catch (e) {
       console.error("[api]", e);
-      const conhecido = [400, 413, 503].includes(e.code);
+      const conhecido = [400, 403, 409, 413, 503].includes(e.code);
       return json(res, conhecido ? e.code : 500, {
         erro: conhecido ? e.message : "Erro interno. Tente de novo.",
       });

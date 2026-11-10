@@ -7,13 +7,20 @@ import "./styles/global.css";
 
 // o painel fica num pedaço separado do bundle: visitante nunca baixa ele
 const Admin = lazy(() => import("./admin/Admin"));
-const ehAdmin = window.location.pathname.replace(/\/+$/, "") === "/admin";
+const AreaDoAluno = lazy(() => import("./aluno/Aluno"));
+const caminho = window.location.pathname.replace(/\/+$/, "");
+const ehAdmin = caminho === "/admin";
+const ehAluno = caminho === "/aluno";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     {ehAdmin ? (
       <Suspense fallback={null}>
         <Admin />
+      </Suspense>
+    ) : ehAluno ? (
+      <Suspense fallback={null}>
+        <AreaDoAluno />
       </Suspense>
     ) : (
       <ConteudoProvider>

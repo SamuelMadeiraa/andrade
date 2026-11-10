@@ -1,12 +1,9 @@
-import { motion } from "framer-motion";
-import { Check } from "lucide-react";
-import GregaDivider from "./GregaDivider";
+import { Check, ArrowRight } from "lucide-react";
+import Reveal from "./Reveal";
 import { useConteudo, whatsappLink, ok, Linhas } from "../conteudo/Conteudo";
-import { abrirInscricao } from "../conteudo/inscricao";
-import { fadeUp, stagger, inView, EASE } from "../motion/variants";
-import "./Planos.css";
+import { irParaMatricula } from "../lib/matricula";
 
-/** Preço em duas escalas: reais no display, centavos menores. */
+/** Preço em duas escalas: reais grandes, centavos menores. */
 function Preco({ valor, gratis }) {
   if (gratis) return <span className="plano__valor">Grátis</span>;
   const [reais, centavos] = String(valor).split(",");
@@ -19,30 +16,26 @@ function Preco({ valor, gratis }) {
   );
 }
 
-/** Faixa de escassez da inauguração — some sozinha quando as vagas acabam. */
+/** Aviso da turma fundadora — some sozinho quando as vagas acabam. */
 function Fundadora({ fundadora }) {
-  const total = Number(fundadora.total) || 0;
-  const restantes = Number(fundadora.restantes) || 0;
-  if (!fundadora.ativa || restantes < 1 || total < 1) return null;
+  const total = Number(fundadora?.total) || 0;
+  const restantes = Number(fundadora?.restantes) || 0;
+  if (!fundadora?.ativa || restantes < 1 || total < 1) return null;
   const preenchidas = Math.max(0, total - restantes);
-  const pct = (preenchidas / total) * 100;
 
   return (
-    <motion.div className="fundadora" variants={fadeUp}>
-      <div className="fundadora__txt">
-        <span className="fundadora__titulo">{fundadora.titulo}</span>
-        <span className="fundadora__sub">
+    <Reveal className="fundadora">
+      <div className="fundadora__texto">
+        <strong>{fundadora.titulo}</strong>
+        <span>
           {String(fundadora.texto || "").replace("{total}", total)}
           {ok(fundadora.prazo) && ` Entrada promocional até ${fundadora.prazo}.`}
         </span>
       </div>
-
       <div className="fundadora__vagas">
-        <span className="fundadora__num">
-          {restantes}
-          <span>/{total}</span>
-        </span>
-        <span className="fundadora__label">vagas restantes</span>
+        <p>
+          <b>{restantes}</b> de {total} vagas restantes
+        </p>
         <div
           className="fundadora__barra"
           role="progressbar"
@@ -51,53 +44,35 @@ function Fundadora({ fundadora }) {
           aria-valuemax={total}
           aria-label={`${preenchidas} de ${total} vagas preenchidas`}
         >
-          <motion.i
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: pct / 100 }}
-            viewport={{ once: true, margin: "-15%" }}
-            transition={{ duration: 1.1, ease: EASE, delay: 0.2 }}
-          />
+          <i style={{ width: `${(preenchidas / total) * 100}%` }} />
         </div>
       </div>
-    </motion.div>
+    </Reveal>
   );
 }
 
 export default function Planos() {
   const { site, planos } = useConteudo();
-
   return (
-    <motion.section
-      className="sec sec--bone planos"
-      id="planos"
-      variants={stagger}
-      initial="hidden"
-      whileInView="show"
-      viewport={inView}
-    >
-      <div className="wrap">
-        <motion.p className="eyebrow" variants={fadeUp}>
-          {planos.eyebrow}
-        </motion.p>
-        <motion.h2 className="planos__titulo" variants={fadeUp}>
-          <Linhas texto={planos.titulo} />
-        </motion.h2>
+    <section className="secao secao--nevoa" id="planos">
+      <div className="conteiner">
+        <Reveal as="header" className="cab">
+          <p className="rotulo">{planos.eyebrow}</p>
+          <h2 className="titulo">
+            <Linhas texto={planos.titulo} />
+          </h2>
+        </Reveal>
 
         <Fundadora fundadora={planos.fundadora} />
 
-        <motion.ul className="planos__grid" variants={stagger}>
-          {planos.itens.map((p, idx) => (
-            <motion.li
-              key={idx}
+        <ul className="planos">
+          {planos.itens.map((p, i) => (
+            <Reveal
+              as="li"
+              key={i}
+              atraso={i * 0.08}
               className={`plano ${p.destaque ? "plano--destaque" : ""}`}
-              variants={fadeUp}
             >
-              {p.destaque && (
-                <div className="plano__grega">
-                  <GregaDivider height={12} />
-                </div>
-              )}
-
               <div className="plano__topo">
                 <h3 className="plano__nome">{p.nome}</h3>
                 {ok(p.selo) && <span className="plano__selo">{p.selo}</span>}
@@ -105,15 +80,15 @@ export default function Planos() {
 
               <p className="plano__preco">
                 <Preco valor={p.preco} gratis={p.gratis} />
+                {ok(p.periodo) && <span className="plano__periodo">{p.periodo}</span>}
               </p>
-              <span className="plano__periodo">{p.periodo}</span>
-              {ok(p.nota) && <span className="plano__nota-item">{p.nota}</span>}
+              {ok(p.nota) && <p className="plano__nota">{p.nota}</p>}
 
               <ul className="plano__itens">
-                {p.itens.map((i, k) => (
-                  <li key={k}>
-                    <Check size={15} strokeWidth={2} aria-hidden="true" />
-                    <span>{i}</span>
+                {(p.itens || []).filter(ok).map((item, j) => (
+                  <li key={j}>
+                    <Check size={17} strokeWidth={2.25} aria-hidden="true" />
+                    {item}
                   </li>
                 ))}
               </ul>
@@ -121,34 +96,29 @@ export default function Planos() {
               {p.abreInscricao ? (
                 <button
                   type="button"
-                  className={`btn ${p.destaque ? "" : "btn--ghost"} plano__cta`}
-                  onClick={() => abrirInscricao(p.nome)}
+                  className={`botao ${p.destaque ? "botao--claro" : "botao--escuro"} plano__cta`}
+                  onClick={() => irParaMatricula({ plano: p.nome })}
                 >
-                  <span>{p.cta}</span>
+                  {p.cta}
+                  <ArrowRight size={17} strokeWidth={2} aria-hidden="true" />
                 </button>
               ) : (
                 <a
-                  className={`btn ${p.destaque ? "" : "btn--ghost"} plano__cta`}
-                  href={whatsappLink(
-                    site,
-                    `Olá! Quero saber mais sobre o plano ${p.nome} da ${site.nome}.`
-                  )}
+                  className={`botao ${p.destaque ? "botao--claro" : "botao--contorno"} plano__cta`}
+                  href={whatsappLink(site)}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <span>{p.cta}</span>
+                  {p.cta}
+                  <ArrowRight size={17} strokeWidth={2} aria-hidden="true" />
                 </a>
               )}
-            </motion.li>
+            </Reveal>
           ))}
-        </motion.ul>
+        </ul>
 
-        {ok(planos.nota) && (
-          <motion.p className="planos__nota" variants={fadeUp}>
-            {planos.nota}
-          </motion.p>
-        )}
+        {ok(planos.nota) && <p className="nota">{planos.nota}</p>}
       </div>
-    </motion.section>
+    </section>
   );
 }

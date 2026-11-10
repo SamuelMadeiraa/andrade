@@ -4,6 +4,9 @@
  *   backups/conteudo-<data>.json   versão anterior a cada salvamento
  *   inscricoes/<id>.json        uma inscrição por arquivo (sem disputa entre gravações)
  *   uploads/<arquivo>           imagens, servidas por /api/arquivo/<arquivo>
+ *   alunos/<id>.json            um aluno por arquivo (cadastro e pagamentos)
+ *   contas/<celular>.json       o acesso: senha em hash + quais alunos a conta enxerga
+ *   comprovantes/<id>/<arquivo> comprovantes de Pix (só o aluno dono e o professor leem)
  *
  * Tudo é lido com useCache:false para nunca pegar versão velha do CDN.
  * O token vem de BLOB_READ_WRITE_TOKEN (criado ao ligar o store ao projeto).
@@ -55,6 +58,13 @@ async function listarTudo(prefix) {
 }
 
 const caminhoInscricao = (id) => `inscricoes/${id}.json`;
+const caminhoAluno = (id) => `alunos/${id}.json`;
+const caminhoConta = (login) => `contas/${login}.json`;
+
+async function apagarPrefixo(prefix) {
+  const blobs = await listarTudo(prefix);
+  if (blobs.length) await del(blobs.map((b) => b.url), tokenBlob ? { token: tokenBlob } : undefined);
+}
 
 export const armazemBlob = {
   lerConteudo: () => lerJson("conteudo.json"),
@@ -101,6 +111,50 @@ export const armazemBlob = {
 
   async lerImagem(arquivo) {
     const r = await get(`uploads/${arquivo}`, PRIVADO).catch(() => null);
+    if (!r || r.statusCode !== 200) return null;
+    return { contentType: r.blob.contentType, dados: Buffer.from(await new Response(r.stream).arrayBuffer()) };
+  },
+
+  // ---------- alunos ----------
+  async listarAlunos() {
+    const blobs = await listarTudo("alunos/");
+    const lidos = await Promise.all(blobs.map((b) => lerJson(b.pathname).catch(() => null)));
+    return lidos.filter(Boolean);
+  },
+
+  lerAluno: (id) => lerJson(caminhoAluno(id)),
+
+  criarAluno: (aluno) => gravarJson(caminhoAluno(aluno.id), aluno),
+
+  gravarAluno: (aluno) => gravarJson(caminhoAluno(aluno.id), aluno),
+
+  /** Apaga o cadastro e os comprovantes. A conta (login) é tratada por quem chama. */
+  async apagarAluno(aluno) {
+    await apagarPrefixo(caminhoAluno(aluno.id));
+    await apagarPrefixo(`comprovantes/${aluno.id}/`);
+  },
+
+  // ---------- contas (login + senha; uma conta pode ter vários alunos) ----------
+  lerConta: (login) => lerJson(caminhoConta(login)),
+
+  gravarConta: (conta) => gravarJson(caminhoConta(conta.login), conta),
+
+  apagarConta: (login) => apagarPrefixo(caminhoConta(login)),
+
+  async listarContas() {
+    const blobs = await listarTudo("contas/");
+    const lidas = await Promise.all(blobs.map((b) => lerJson(b.pathname).catch(() => null)));
+    return lidas.filter(Boolean);
+  },
+
+  /** Apaga um arquivo privado (comprovante substituído ou baixa desfeita). */
+  apagarPrivado: (caminho) => apagarPrefixo(caminho),
+
+  salvarPrivado: (caminho, dados, contentType) =>
+    put(caminho, dados, { ...PRIVADO, contentType, addRandomSuffix: false }),
+
+  async lerPrivado(caminho) {
+    const r = await get(caminho, { ...PRIVADO, useCache: false }).catch(() => null);
     if (!r || r.statusCode !== 200) return null;
     return { contentType: r.blob.contentType, dados: Buffer.from(await new Response(r.stream).arrayBuffer()) };
   },

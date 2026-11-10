@@ -28,27 +28,19 @@ const semArmazem = new Proxy(
 const tratar = criarRotas({
   senha: process.env.ADMIN_SENHA,
   armazem: blobLigado ? armazemBlob : semArmazem,
+  // /api/diagnostico (com a senha do painel): só SE existe e os NOMES das variáveis, nunca os valores
+  diagnostico: () => ({
+    blobConfigurado: blobLigado,
+    sessaoSegredoProprio: Boolean(process.env.SESSAO_SEGREDO),
+    ambiente: process.env.VERCEL_ENV || null,
+    variaveis: Object.keys(process.env)
+      .filter((k) => /BLOB|READ_WRITE|STORE_ID|ADMIN|SENHA|SESSAO/i.test(k))
+      .sort(),
+  }),
 });
 
 export default function handler(req, res) {
   const url = new URL(req.url, "http://localhost");
   const rota = url.searchParams.get("rota") ?? url.pathname.replace(/^\/api\/?/, "");
-  // diagnóstico da configuração: diz só SE existe e os NOMES das variáveis,
-  // nunca os valores
-  if (rota === "diagnostico") {
-    res.setHeader("Content-Type", "application/json; charset=utf-8");
-    res.setHeader("Cache-Control", "no-store");
-    return res.end(
-      JSON.stringify({
-        senhaConfigurada: Boolean(process.env.ADMIN_SENHA),
-        blobConfigurado: blobLigado,
-        ambiente: process.env.VERCEL_ENV || null,
-        variaveis: Object.keys(process.env)
-          .filter((k) => /BLOB|READ_WRITE|STORE_ID|ADMIN|SENHA/i.test(k))
-          .sort(),
-      })
-    );
-  }
-
   return tratar(req, res, `/api/${rota}`);
 }

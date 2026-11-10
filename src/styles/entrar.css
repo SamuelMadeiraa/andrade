@@ -1,0 +1,195 @@
+/* ============ TELA DE LOGIN (aluno e professor) ============
+   O fundo é a arte da academia: em pé (900×1600) no celular, deitada
+   (1920×1080) no computador. Nas duas o brasão fica no topo e o meio é preto
+   liso — é ali que o formulário entra. O padding-top acompanha o tamanho que
+   o brasão fica em cada tela, para o formulário nunca cobrir. */
+.entrar {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  background: #000;
+  color: var(--bone);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+.entrar__tela {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: max(29vh, min(50vw, 240px)) 1.75rem 1.75rem;
+  /* o degradê de baixo segura a leitura dos links sobre as pinceladas */
+  background:
+    linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent 16%),
+    #050505 url("../assets/fundo-login.webp") top center / cover no-repeat;
+}
+@media (min-width: 481px) {
+  /* tablet em pé: a arte vira uma coluna e as bordas somem no preto */
+  .entrar__tela {
+    background:
+      linear-gradient(to right, #000, transparent 14%, transparent 86%, #000),
+      linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent 16%),
+      #050505 url("../assets/fundo-login.webp") top center / cover no-repeat;
+  }
+}
+@media (min-width: 900px) and (orientation: landscape) {
+  /* computador e tablet deitado: arte larga (1920×1080) ocupando a tela toda,
+     com o brasão no topo (30% da altura da arte) e o formulário logo abaixo */
+  .entrar {
+    background: #050505 url("../assets/fundo-login-largo.webp") top center / cover no-repeat;
+  }
+  .entrar__tela {
+    background: none;
+    padding-top: max(19.5vw, 34vh);
+  }
+}
+.entrar__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+}
+.entrar__papel {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #b9b7b2;
+  text-align: center;
+}
+.entrar h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 2.1rem;
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-align: center;
+  margin-bottom: 0.4rem;
+}
+.entrar__texto {
+  font-size: 0.86rem;
+  color: #c9c7c2;
+  text-align: center;
+}
+.entrar__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.entrar__campo > span {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c9c7c2;
+}
+.entrar__campo input {
+  width: 100%;
+  background: rgba(11, 11, 12, 0.72);
+  border: 1px solid rgba(244, 242, 237, 0.28);
+  color: var(--bone);
+  padding: 0.8rem 0.85rem;
+  font: inherit;
+  font-size: 1rem; /* 16px: o iPhone não dá zoom ao focar */
+  transition: border-color 0.2s;
+}
+.entrar__campo input::placeholder {
+  color: #77777a;
+}
+.entrar__campo input:focus {
+  outline: none;
+  border-color: var(--bone);
+}
+.entrar__senha {
+  position: relative;
+}
+.entrar__senha input {
+  padding-right: 2.9rem;
+}
+.entrar__senha button {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 2.8rem;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  color: #b9b7b2;
+  cursor: pointer;
+}
+.entrar__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.9rem;
+  margin-top: 0.3rem;
+  background: var(--bone);
+  color: var(--ink);
+  border: 1px solid var(--bone);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.entrar__btn:hover:not(:disabled) {
+  background: #fff;
+}
+.entrar__btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.entrar__btn--ghost {
+  background: transparent;
+  color: var(--bone);
+  border-color: rgba(244, 242, 237, 0.35);
+}
+.entrar__btn--ghost:hover:not(:disabled) {
+  background: rgba(244, 242, 237, 0.08);
+}
+.entrar__erro {
+  color: #ff9d94;
+  font-size: 0.86rem;
+  text-align: center;
+}
+.entrar__aviso {
+  border: 1px solid rgba(244, 242, 237, 0.25);
+  background: rgba(11, 11, 12, 0.72);
+  padding: 0.8rem;
+  font-size: 0.82rem;
+  color: #c9c7c2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.entrar__rodape {
+  margin-top: auto;
+  padding-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+}
+.entrar__rodape a {
+  color: #b9b7b2;
+  text-decoration: none;
+}
+.entrar__rodape a:hover {
+  color: var(--bone);
+  text-decoration: underline;
+}
+.entrar :focus-visible {
+  outline: 2px solid var(--bone);
+  outline-offset: 2px;
+}

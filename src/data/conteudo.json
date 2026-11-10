@@ -291,5 +291,35 @@
     "tituloEndereco": "Onde treinamos",
     "tituloMapa": "Mapa",
     "textoFinal": "Andrade BJJ — São José/SC"
+  },
+  "faq": {
+    "eyebrow": "Dúvidas frequentes",
+    "titulo": "Antes de pisar no tatame.",
+    "itens": [
+      {
+        "pergunta": "Nunca treinei. Posso começar?",
+        "resposta": "Pode, e a maioria começa assim. A primeira aula é gratuita e sem compromisso: você conhece a turma, o professor avalia seu nível e a gente te encaixa no ritmo certo."
+      },
+      {
+        "pergunta": "Preciso ter kimono para a primeira aula?",
+        "resposta": "Não. Na aula experimental o kimono é emprestado, e no plano mensal a academia empresta até você comprar o seu."
+      },
+      {
+        "pergunta": "Em quais dias e horários tem treino?",
+        "resposta": "Os treinos são às segundas, quartas e quintas, à noite. A grade completa de cada turma está na seção Horários, e mudanças por feriado são avisadas no Instagram."
+      },
+      {
+        "pergunta": "Tem taxa de matrícula ou fidelidade?",
+        "resposta": "Não. O plano mensal não tem matrícula, taxa nem fidelidade."
+      },
+      {
+        "pergunta": "Como faço o pagamento?",
+        "resposta": "Por Pix, direto na ficha de matrícula do site, ou com cartão ou dinheiro na academia, no seu primeiro treino."
+      },
+      {
+        "pergunta": "Tem turma para crianças e turma só de mulheres?",
+        "resposta": "Sim. São duas turmas kids, uma turma feminina exclusiva e a turma adulta. Veja a descrição de cada uma na seção Turmas."
+      }
+    ]
   }
 }
