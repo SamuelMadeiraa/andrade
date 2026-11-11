@@ -76,6 +76,7 @@
   flex: 1;
 }
 .ad-lateral nav button,
+.ad-lateral__instalar,
 .ad-lateral__sair {
   display: flex;
   align-items: center;
@@ -89,6 +90,7 @@
   font-size: 0.9rem;
 }
 .ad-lateral nav button:hover,
+.ad-lateral__instalar:hover,
 .ad-lateral__sair:hover {
   background: rgba(244, 242, 237, 0.08);
   color: var(--bone);
@@ -102,6 +104,7 @@
   margin-bottom: 0.6rem;
   border: 1px solid var(--line-i) !important;
 }
+.ad-lateral__instalar,
 .ad-lateral__sair {
   margin-top: 1rem;
   border-top: 1px solid var(--line-i);

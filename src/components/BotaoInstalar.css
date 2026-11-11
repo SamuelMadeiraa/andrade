@@ -1,0 +1,56 @@
+.entrar__btn.instalar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.ad-lateral__instalar + .ad-lateral__sair {
+  margin-top: 0;
+  border-top: 0;
+  padding-top: 0.55rem;
+}
+.instalar-dica {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+}
+.instalar-dica__caixa {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: #161618;
+  color: #f4f2ed;
+  border: 1px solid rgba(244, 242, 237, 0.15);
+  padding: 1.25rem 1.25rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.instalar-dica__caixa strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+}
+.instalar-dica__caixa ol {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+.instalar-dica__caixa li {
+  margin: 0.35rem 0;
+}
+.instalar-dica__caixa svg {
+  vertical-align: -2px;
+}
+.instalar-dica__fechar {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+}

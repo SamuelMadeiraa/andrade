@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { MotionConfig } from "framer-motion";
 import App from "./App";
 import { ConteudoProvider } from "./conteudo/Conteudo";
+import { ativarPwa } from "./lib/pwa";
 import "./styles/global.css";
 
 // o painel fica num pedaço separado do bundle: visitante nunca baixa ele
@@ -11,6 +12,10 @@ const AreaDoAluno = lazy(() => import("./aluno/Aluno"));
 const caminho = window.location.pathname.replace(/\/+$/, "");
 const ehAdmin = caminho === "/admin";
 const ehAluno = caminho === "/aluno";
+
+// área do aluno e painel do professor viram apps instaláveis (PWA)
+if (ehAdmin) ativarPwa("admin");
+if (ehAluno) ativarPwa("aluno");
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

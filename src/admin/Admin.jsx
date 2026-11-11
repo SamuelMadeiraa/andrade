@@ -16,6 +16,7 @@ import { mesclar } from "../conteudo/Conteudo";
 import { Objeto, GradeHorarios } from "./Editor";
 import Inscricoes from "./Inscricoes";
 import Alunos from "./Alunos";
+import BotaoInstalar from "../components/BotaoInstalar";
 import "../styles/entrar.css";
 import "./admin.css";
 
@@ -140,6 +141,7 @@ function Login({ onEntrar }) {
           <button className="entrar__btn" disabled={carregando || !senha}>
             {carregando ? "Entrando…" : "Entrar"}
           </button>
+          <BotaoInstalar className="entrar__btn entrar__btn--ghost" />
         </form>
         <p className="entrar__rodape">
           <a href="/">← Voltar para o site</a>
@@ -414,6 +416,7 @@ export default function Admin() {
             </button>
           ))}
         </nav>
+        <BotaoInstalar className="ad-lateral__instalar" />
         <button className="ad-lateral__sair" onClick={sair}>
           <LogOut size={15} /> Sair
         </button>

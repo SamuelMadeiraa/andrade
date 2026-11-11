@@ -16,6 +16,7 @@ import {
 import padrao from "../data/conteudo.json";
 import { mesclar, ok, whatsappLink } from "../conteudo/Conteudo";
 import Marca from "../components/Marca";
+import BotaoInstalar from "../components/BotaoInstalar";
 import { pixCopiaECola, valorNumero, formataReais } from "../lib/pix";
 import { nomeMes, dataBR, devendo } from "../lib/mensalidades";
 import "../styles/entrar.css";
@@ -179,6 +180,7 @@ function Login({ onEntrar, site }) {
               Não tenho senha
             </a>
           </p>
+          <BotaoInstalar className="entrar__btn entrar__btn--ghost" />
         </form>
         <p className="entrar__rodape">
           <a href="/">← Voltar para o site</a>
@@ -541,9 +543,12 @@ function Painel({ dados, pix, site, onDados, onSair, onTrocarSenha }) {
             Andrade<b>BJJ</b>
           </span>
         </a>
-        <button className="al-topo__sair" onClick={onSair}>
-          <LogOut size={16} /> Sair
-        </button>
+        <div className="al-topo__acoes">
+          <BotaoInstalar className="al-topo__instalar" />
+          <button className="al-topo__sair" onClick={onSair}>
+            <LogOut size={16} /> Sair
+          </button>
+        </div>
       </header>
 
       <main className="al-corpo">

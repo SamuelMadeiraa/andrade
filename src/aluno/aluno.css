@@ -51,7 +51,8 @@
   color: var(--al-suave);
   margin-left: 0.25em;
 }
-.al-topo__sair {
+.al-topo__sair,
+.al-topo__instalar {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -62,7 +63,8 @@
   font-size: 0.82rem;
   cursor: pointer;
 }
-.al-topo__sair:hover {
+.al-topo__sair:hover,
+.al-topo__instalar:hover {
   background: rgba(244, 242, 237, 0.08);
 }
 
@@ -429,4 +431,9 @@
 .al-familia__lista button.is-on span.is-devendo {
   color: #8a4b00;
   font-weight: 700;
+}
+.al-topo__acoes {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
