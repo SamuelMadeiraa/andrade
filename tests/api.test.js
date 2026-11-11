@@ -743,6 +743,32 @@ for (const amb of AMBIENTES) {
       assert.equal((await acao("pagar", mesDe(mesesAtras(6)))).status, 400, "mês antes de o aluno entrar");
     });
 
+    test("já pago em lote: marca os meses anteriores de uma vez, sem mexer nos pagos nem nos a conferir", async () => {
+      const a = await alunoPronto({ entrouEm: mesesAtras(5) });
+      const meses = [5, 4, 3, 2, 1].map((n) => mesDe(mesesAtras(n)));
+      // um mês com comprovante a conferir: o lote não pode passar por cima
+      await enviar(a.token, meses[4]);
+      const r = await api("PUT", `/api/alunos/${a.id}/pagamentos`, { admin: true, corpo: { meses } });
+      assert.equal(r.status, 200, JSON.stringify(r.dados));
+      assert.equal(r.dados.marcados, 4);
+      for (const x of meses.slice(0, 4)) {
+        assert.deepEqual([r.dados.aluno.pagamentos[x].status, r.dados.aluno.pagamentos[x].conferido, r.dados.aluno.pagamentos[x].por], ["pago", true, "professor"], x);
+      }
+      assert.equal(r.dados.aluno.pagamentos[meses[4]].conferido, false, "o comprovante a conferir virou conferido sozinho");
+      assert.equal(r.dados.aluno.pagamentos[meses[4]].por, "aluno");
+      // o aluno vê os meses quitados
+      const eu = await api("GET", "/api/aluno/eu", { token: a.token });
+      assert.ok(eu.dados.alunos[0].mensalidades.filter((m) => meses.slice(0, 4).includes(m.mes)).every((m) => m.status === "pago"));
+      // de novo: nada muda
+      assert.equal((await api("PUT", `/api/alunos/${a.id}/pagamentos`, { admin: true, corpo: { meses } })).dados.marcados, 0);
+      // fora do período, vazio, ou sem a senha do painel: recusado
+      const antes = mesDe(mesesAtras(7));
+      assert.equal((await api("PUT", `/api/alunos/${a.id}/pagamentos`, { admin: true, corpo: { meses: [antes] } })).status, 400);
+      assert.equal((await api("PUT", `/api/alunos/${a.id}/pagamentos`, { admin: true, corpo: { meses: [] } })).status, 400);
+      assert.equal((await api("PUT", `/api/alunos/${a.id}/pagamentos`, { admin: true, corpo: { meses: ["2099-01"] } })).status, 400);
+      assert.equal((await api("PUT", `/api/alunos/${a.id}/pagamentos`, { corpo: { meses } })).status, 401);
+    });
+
     test("dar baixa num mês que tem comprovante mantém o comprovante", async () => {
       const a = await alunoPronto();
       const mes = mesDe(mesesAtras(1));

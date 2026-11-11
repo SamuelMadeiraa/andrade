@@ -17,6 +17,7 @@
  *   DELETE /api/alunos/:id                          apaga (com os comprovantes)
  *   POST   /api/alunos/:id/senha                    gera nova senha temporária
  *   PUT    /api/alunos/:id/pagamentos/:mes          pagar | confirmar | recusar | reabrir
+ *   PUT    /api/alunos/:id/pagamentos               { meses: [...] } "já pago" em vários meses de uma vez
  *   GET    /api/alunos/:id/comprovante/:mes         vê o comprovante
  *
  * A senha nunca é guardada: só o scrypt dela. A senha temporária aparece uma
@@ -559,6 +560,41 @@ export function criarRotasAlunos({ senha: senhaPainel, armazem, json, lerCorpo }
         });
       }
       json(res, 200, { aluno: await paraProfessor(aluno), senhaTemporaria: temporaria });
+      return true;
+    }
+
+    // "já pago" em lote: meses antigos que o aluno pagou antes do sistema (ou por fora)
+    if (acao === "pagamentos" && !mes && m === "PUT") {
+      const corpo = await lerCorpo(req, 20_000);
+      const pedidos = Array.isArray(corpo.meses) ? [...new Set(corpo.meses.map(String))] : [];
+      const atual = hojeBR().slice(0, 7);
+      const entrada = String(aluno.entrouEm || "").slice(0, 7);
+      if (!pedidos.length || pedidos.length > 600) {
+        json(res, 400, { erro: "Diga quais meses marcar como pagos." });
+        return true;
+      }
+      if (pedidos.some((x) => !MES_VALIDO.test(x) || x < entrada || x > atual)) {
+        json(res, 400, { erro: "Só dá para marcar meses entre a entrada do aluno e o mês atual." });
+        return true;
+      }
+      const pagamentos = { ...aluno.pagamentos };
+      const agora = new Date().toISOString();
+      let marcados = 0;
+      for (const x of pedidos) {
+        if (pagamentos[x]?.status === "pago") continue; // já pago (ou a conferir): não mexe
+        pagamentos[x] = {
+          ...pagamentos[x],
+          status: "pago",
+          conferido: true,
+          por: "professor",
+          valor: pagamentos[x]?.valor || aluno.valor || "",
+          confirmadoEm: agora,
+        };
+        marcados++;
+      }
+      const novo = { ...aluno, pagamentos };
+      if (marcados) await armazem.gravarAluno(novo);
+      json(res, 200, { aluno: await paraProfessor(novo), marcados });
       return true;
     }
 

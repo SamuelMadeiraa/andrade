@@ -8,6 +8,7 @@ import {
   Trash2,
   Pencil,
   Check,
+  CheckCheck,
   X,
   FileText,
   Undo2,
@@ -268,6 +269,7 @@ export default function Alunos({ api, conteudo }) {
   const [aberto, setAberto] = useState(null);
   const [editando, setEditando] = useState(null); // id | "novo"
   const [acesso, setAcesso] = useState(null);
+  const [historicoTodo, setHistoricoTodo] = useState(null); // id do aluno com o histórico aberto inteiro
 
   const carregar = async () => {
     setErro("");
@@ -369,6 +371,31 @@ export default function Alunos({ api, conteudo }) {
     tentar(async () => {
       if (acao === "recusar" && !window.confirm("Recusar este comprovante? A mensalidade volta a ficar em aberto para o aluno.")) return;
       const r = await api("PUT", `/api/alunos/${a.id}/pagamentos/${mes}`, { acao });
+      trocar(r.aluno);
+    });
+
+  // meses antes do atual ainda em aberto: o aluno pagou antes do sistema ou por fora
+  const anterioresEmAberto = (meses) => meses.filter((m) => m.mes < mesAtual && m.status !== "pago");
+
+  const marcarAnteriores = (a, meses) =>
+    tentar(async () => {
+      const lista = anterioresEmAberto(meses);
+      if (!lista.length) return;
+      const total = lista.reduce((t, m) => t + valorNumero(m.valor), 0);
+      const nomes = lista
+        .slice()
+        .reverse()
+        .map((m) => nomeMes(m.mes))
+        .join(", ");
+      if (
+        !window.confirm(
+          `Marcar como já pagos ${lista.length === 1 ? "1 mês" : `${lista.length} meses`} de ${a.nome} ` +
+            `(${formataReais(total)})?\n\n${nomes}\n\nDá para desfazer mês a mês depois.`
+        )
+      ) {
+        return;
+      }
+      const r = await api("PUT", `/api/alunos/${a.id}/pagamentos`, { meses: lista.map((m) => m.mes) });
       trocar(r.aluno);
     });
 
@@ -560,6 +587,16 @@ export default function Alunos({ api, conteudo }) {
                       )}
                     </dl>
 
+                    <div className="ad-historico">
+                      <h3>
+                        Histórico de mensalidades <small>{meses.length === 1 ? "1 mês" : `${meses.length} meses`}</small>
+                      </h3>
+                      {anterioresEmAberto(meses).length > 0 && (
+                        <button className="ad-btn ad-btn--ghost" onClick={() => marcarAnteriores(a, meses)}>
+                          <CheckCheck size={15} /> Marcar meses anteriores como pagos ({anterioresEmAberto(meses).length})
+                        </button>
+                      )}
+                    </div>
                     <table className="ad-meses">
                       <thead>
                         <tr>
@@ -570,7 +607,7 @@ export default function Alunos({ api, conteudo }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {meses.map((m) => (
+                        {(historicoTodo === a.id ? meses : meses.slice(0, 6)).map((m) => (
                           <tr key={m.mes}>
                             <td>
                               <strong>{nomeMes(m.mes)}</strong>
@@ -585,7 +622,14 @@ export default function Alunos({ api, conteudo }) {
                               >
                                 {m.status === "pago" && !m.conferido ? "Pago · a conferir" : STATUS_MES[m.status]}
                               </span>
-                              {m.enviadoEm && <small>comprovante em {dataBR(m.enviadoEm)}</small>}
+                              {m.status === "pago" && m.conferido && m.confirmadoEm ? (
+                                <small>
+                                  {m.por === "aluno" ? "Pix do aluno, conferido" : "baixa do professor"} em{" "}
+                                  {dataBR(m.confirmadoEm)}
+                                </small>
+                              ) : (
+                                m.enviadoEm && <small>comprovante em {dataBR(m.enviadoEm)}</small>
+                              )}
                             </td>
                             <td className="ad-meses__acoes">
                               {m.temComprovante && (
@@ -607,8 +651,12 @@ export default function Alunos({ api, conteudo }) {
                                 </>
                               )}
                               {m.status !== "pago" && (
-                                <button className="ad-btn" onClick={() => pagamento(a, m.mes, "pagar")}>
-                                  <Check size={14} /> Dar baixa
+                                <button
+                                  className="ad-btn"
+                                  onClick={() => pagamento(a, m.mes, "pagar")}
+                                  title="Dar baixa: o aluno pagou (dinheiro, cartão, Pix por fora…)"
+                                >
+                                  <Check size={14} /> Já pago
                                 </button>
                               )}
                               {m.status === "pago" && m.conferido && (
@@ -623,6 +671,20 @@ export default function Alunos({ api, conteudo }) {
                             </td>
                           </tr>
                         ))}
+                        {meses.length > 6 && (
+                          <tr>
+                            <td colSpan={4} className="ad-meses__mais">
+                              <button
+                                className="ad-link"
+                                onClick={() => setHistoricoTodo(historicoTodo === a.id ? null : a.id)}
+                              >
+                                {historicoTodo === a.id
+                                  ? "Mostrar só os 6 meses mais recentes"
+                                  : `Ver histórico completo (mais ${meses.length - 6} meses)`}
+                              </button>
+                            </td>
+                          </tr>
+                        )}
                         {!meses.length && (
                           <tr>
                             <td colSpan={4}>Ainda sem mensalidades (a data de entrada é futura).</td>

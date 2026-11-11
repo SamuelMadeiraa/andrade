@@ -382,7 +382,26 @@ try {
     await aluno.aparecerTexto("1 mensalidade em aberto", ".al");
     abaAtual = prof;
     await prof.js(`[...document.querySelectorAll(".ad-meses tbody tr")].find((tr) => tr.innerText.startsWith(${JSON.stringify(Mes(MES_PASSADO))})).querySelector("button").click()`);
-    await prof.ate(`[...document.querySelectorAll(".ad-meses tbody tr")].find((tr) => tr.innerText.startsWith(${JSON.stringify(Mes(MES_PASSADO))})).innerText.includes("Dar baixa")`, "desfazer a baixa");
+    await prof.ate(`[...document.querySelectorAll(".ad-meses tbody tr")].find((tr) => tr.innerText.startsWith(${JSON.stringify(Mes(MES_PASSADO))})).innerText.includes("Já pago")`, "desfazer a baixa");
+  });
+
+  await passo("professor: histórico e “marcar meses anteriores como pagos” de uma vez", async () => {
+    abaAtual = prof;
+    const linhaPassada = `[...document.querySelectorAll(".ad-meses tbody tr")].find((tr) => tr.innerText.startsWith(${JSON.stringify(Mes(MES_PASSADO))}))`;
+    confere((await prof.texto(".ad-historico")).toUpperCase().includes("HISTÓRICO DE MENSALIDADES"), "sem o título do histórico");
+    const antes = prof.dialogos.length;
+    await prof.clicarTexto("Marcar meses anteriores como pagos", ".ad-historico");
+    await prof.ate(`${linhaPassada}.innerText.includes("Desfazer")`, "o mês anterior ficar pago");
+    confere(prof.dialogos.slice(antes).some((d) => d.includes("Marcar como já pagos")), "não pediu confirmação antes do lote");
+    confere((await prof.js(`${linhaPassada}.innerText`)).includes("baixa do professor"), "o histórico não diz quem deu a baixa");
+    await prof.ate(`!document.querySelector(".ad-historico").innerText.includes("Marcar meses anteriores")`, "o botão sumir quando não há mais nada");
+    abaAtual = aluno;
+    await aluno.ir(B + "/aluno");
+    await aluno.aparecerTexto("1 mensalidade em aberto", ".al");
+    // volta como estava para os passos seguintes
+    abaAtual = prof;
+    await prof.js(`${linhaPassada}.querySelector("button[title='Voltar para em aberto']").click()`);
+    await prof.ate(`${linhaPassada}.innerText.includes("Já pago")`, "desfazer");
   });
 
   /* ============ senha: trocar, sair, esquecer ============ */
